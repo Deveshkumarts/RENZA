@@ -689,6 +689,8 @@ textarea {
   border-radius: 20px;
   border: 1px solid var(--border-color);
   transition: all 0.2s;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .task-checkbox-wrapper:hover {
