@@ -550,6 +550,10 @@ textarea {
   background-color: #ffffff;
 }
 
+.mobile-header {
+  display: none;
+}
+
 /* =========================================
    Tasks List (Planned Tomorrow)
    ========================================= */
@@ -1010,39 +1014,94 @@ button.add-task-trigger-btn:hover:not(:disabled) {
     height: auto;
     min-height: 100vh;
   }
+
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid #222;
+  }
+  
+  .mobile-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .mobile-header-brand h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .mobile-header-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  .mobile-menu-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(2px);
+  }
   
   .sidebar {
-    width: 100%;
-    height: auto;
-    flex: 0 0 auto;
-    border-right: none;
-    border-bottom: 1px solid #222;
-    padding: 1.5rem 1.5rem 1rem;
-    position: relative; /* Remove sticky if it was causing issues */
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    border-right: 1px solid #222;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .sidebar.mobile-open {
+    left: 0;
   }
   
   .sidebar .nav-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .sidebar .nav-item {
-    flex: 1 1 auto;
-    text-align: center;
-    padding: 0.5rem;
+    display: block;
+    margin-top: 0;
     margin-bottom: 0;
   }
   
+  .sidebar .nav-item {
+    text-align: left;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.2rem;
+  }
+  
   .sidebar-footer {
-    padding-top: 1rem;
+    padding-top: 1.5rem;
   }
   
   .main-content {
     padding: 1.5rem 1rem;
     flex: 1 0 auto;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .app-layout.sidebar-closed .main-content {

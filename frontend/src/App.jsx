@@ -19,7 +19,19 @@ function App() {
     return isLeader ? 'view' : 'post';
   });
   
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsSidebarOpen(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleLogin = (loggedInUser) => {
     setUser(loggedInUser);
@@ -48,12 +60,28 @@ function App() {
 
   return (
     <div className={`app-layout ${isSidebarOpen ? '' : 'sidebar-closed'}`}>
-      {!isSidebarOpen && (
+      {/* Mobile Overlay */}
+      {isSidebarOpen && window.innerWidth <= 768 && (
+        <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
+      )}
+
+      {/* Mobile Header (Only visible on mobile) */}
+      <div className="mobile-header">
+        <div className="mobile-header-brand">
+          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <img src="/logo.png" alt="Renza Logo" className="mobile-header-logo" />
+          <h2>Renza</h2>
+        </div>
+      </div>
+
+      {!isSidebarOpen && window.innerWidth > 768 && (
         <button className="toggle-sidebar-btn fixed-open-btn" onClick={() => setIsSidebarOpen(true)} title="Open sidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
         </button>
       )}
-      <aside className={`sidebar ${isSidebarOpen ? '' : 'collapsed'}`}>
+      <aside className={`sidebar ${isSidebarOpen ? 'mobile-open' : 'collapsed'}`}>
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <img src="/logo.png" alt="Renza Logo" className="sidebar-logo" />
