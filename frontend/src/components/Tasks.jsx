@@ -108,6 +108,7 @@ function Tasks({ user }) {
       fetchData();
     } catch (err) {
       console.error('Error assigning task:', err);
+      alert('Failed to assign task: ' + (err.message || 'Unknown error'));
     } finally {
       setIsSubmitting(false);
     }
