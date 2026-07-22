@@ -927,3 +927,32 @@ button.add-task-trigger-btn:hover:not(:disabled) {
   min-width: 100px;
   white-space: nowrap;
 }
+
+/* Feedback List Styles */
+.update-content h3 {
+  margin-bottom: 0.8rem;
+  font-size: 1.05rem;
+  color: var(--text-color);
+}
+
+.feedback-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.feedback-item {
+  background-color: var(--input-bg);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  border-left: 3px solid var(--accent-color);
+}
+
+.no-feedback {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
