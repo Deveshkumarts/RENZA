@@ -828,9 +828,16 @@ textarea {
   border-color: #000;
 }
 
-.add-task-actions {
+.add-task-input-group {
   display: flex;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.task-actions {
+  display: flex;
+  gap: 0.8rem;
 }
 
 .btn-small {
