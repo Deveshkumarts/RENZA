@@ -956,3 +956,109 @@ button.add-task-trigger-btn:hover:not(:disabled) {
   font-style: italic;
   margin-bottom: 1rem;
 }
+
+/* =========================================
+   Mobile Responsiveness
+   ========================================= */
+@media (max-width: 768px) {
+  /* Login Page Mobile */
+  .login-container.modern {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  
+  .login-info-side {
+    flex: 0 0 auto;
+    padding: 3rem 2rem 2rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .login-info-side .info-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+  }
+  
+  .login-info-side .info-title {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .login-info-side .info-description {
+    display: none; /* Hide long description to save vertical space on mobile */
+  }
+  
+  .login-form-side {
+    flex: 1 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .login-form-side .modern-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem 1.5rem;
+  }
+  
+  /* Dashboard App Layout Mobile */
+  .app-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex: 0 0 auto;
+    border-right: none;
+    border-bottom: 1px solid #222;
+    padding: 1.5rem 1.5rem 1rem;
+    position: relative; /* Remove sticky if it was causing issues */
+  }
+  
+  .sidebar .nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .sidebar .nav-item {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 0.5rem;
+    margin-bottom: 0;
+  }
+  
+  .sidebar-footer {
+    padding-top: 1rem;
+  }
+  
+  .main-content {
+    padding: 1.5rem 1rem;
+    flex: 1 0 auto;
+  }
+  
+  .app-layout.sidebar-closed .main-content {
+    padding-left: 1rem; /* Reset padding if sidebar is toggled */
+  }
+  
+  /* Tasks Layout Mobile */
+  .task-body {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 0.5rem !important;
+  }
+  
+  .form-row .input-group {
+    width: 100%;
+  }
+}
