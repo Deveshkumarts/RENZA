@@ -55,7 +55,7 @@ function Login({ onLogin }) {
           
           <form onSubmit={handleSubmit} className="modern-form">
             <div className="input-group">
-              <label>Corporate Email</label>
+              <label>Email</label>
               <input 
                 type="email" 
                 value={email} 
@@ -66,7 +66,7 @@ function Login({ onLogin }) {
             </div>
             
             <div className="input-group" style={{ marginTop: '0.5rem' }}>
-              <label>Security Key (Password)</label>
+              <label>Password</label>
               <input 
                 type="password" 
                 value={password} 
@@ -76,7 +76,7 @@ function Login({ onLogin }) {
               />
             </div>
             
-            <button type="submit" className="modern-button">Secure Login</button>
+            <button type="submit" className="modern-button">Login</button>
           </form>
         </div>
       </div>
