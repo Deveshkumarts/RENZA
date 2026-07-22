@@ -34,38 +34,51 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h1 className="login-title">Welcome to Renza</h1>
-        <p className="login-subtitle">Team Management Dashboard</p>
-        
-        {error && <div className="error-banner">{error}</div>}
-        
-        <form onSubmit={handleSubmit} className="modern-form">
-          <div className="input-group">
-            <label>Email</label>
-            <input 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="member@renza.com"
-            />
+    <div className="login-container modern">
+      <div className="login-info-side">
+        <div className="login-glow"></div>
+        <img src="/logo.png" alt="Renza Logo" className="info-logo" onError={(e) => e.target.style.display = 'none'} />
+        <h1 className="info-title">RENZA</h1>
+        <p className="info-description">
+          Streamline your team operations, track massive goals, and maintain a seamless flow of internal communication. Welcome to the future of management.
+        </p>
+      </div>
+      
+      <div className="login-form-side">
+        <div className="modern-box">
+          <div className="login-header">
+            <h1>Welcome Back</h1>
+            <p className="subtitle">Please enter your credentials to continue</p>
           </div>
           
-          <div className="input-group">
-            <label>Password</label>
-            <input 
-              type="password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-            />
-          </div>
+          {error && <div className="error-message">{error}</div>}
           
-          <button type="submit" className="login-btn">Log In</button>
-        </form>
+          <form onSubmit={handleSubmit} className="modern-form">
+            <div className="input-group">
+              <label>Corporate Email</label>
+              <input 
+                type="email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="member@renza.com"
+              />
+            </div>
+            
+            <div className="input-group" style={{ marginTop: '0.5rem' }}>
+              <label>Security Key (Password)</label>
+              <input 
+                type="password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+              />
+            </div>
+            
+            <button type="submit" className="modern-button">Secure Login</button>
+          </form>
+        </div>
       </div>
     </div>
   );
