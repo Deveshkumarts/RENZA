@@ -896,3 +896,30 @@ button.add-task-trigger-btn:hover:not(:disabled) {
     transform: translateY(0);
   }
 }
+
+/* Feedback Form Styles */
+.feedback-form {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.feedback-form input[type="text"] {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  outline: none;
+  background-color: var(--input-bg);
+}
+
+.feedback-form input[type="text"]:focus {
+  border-color: #000;
+}
+
+.feedback-form button {
+  width: auto;
+  min-width: 100px;
+  white-space: nowrap;
+}
