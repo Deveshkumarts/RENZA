@@ -988,7 +988,9 @@ button.add-task-trigger-btn:hover:not(:disabled) {
   }
   
   .login-info-side .info-description {
-    display: none; /* Hide long description to save vertical space on mobile */
+    display: block;
+    font-size: 1rem;
+    margin-top: 0.5rem;
   }
   
   .login-form-side {
