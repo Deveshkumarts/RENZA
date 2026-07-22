@@ -1,0 +1,45 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  role      Role      @default(MEMBER)
+  updates   Update[]
+  feedback  Feedback[]
+  createdAt DateTime  @default(now())
+}
+
+enum Role {
+  MEMBER
+  CEO
+  COO
+}
+
+model Update {
+  id         Int        @id @default(autoincrement())
+  userId     Int
+  user       User       @relation(fields: [userId], references: [id])
+  completed  String
+  planned    String
+  blockers   String?
+  feedback   Feedback[]
+  createdAt  DateTime   @default(now())
+}
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  updateId  Int
+  update    Update   @relation(fields: [updateId], references: [id])
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  comment   String
+  createdAt DateTime @default(now())
+}
