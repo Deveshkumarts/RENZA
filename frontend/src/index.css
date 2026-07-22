@@ -799,7 +799,8 @@ textarea {
   transition: all 0.2s;
 }
 
-.add-task-trigger-btn:hover {
+button.add-task-trigger-btn:hover,
+button.add-task-trigger-btn:hover:not(:disabled) {
   background: #f0f0f0;
   border-color: #999;
   color: #000;
