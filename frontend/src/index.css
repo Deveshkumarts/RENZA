@@ -900,6 +900,8 @@ button.add-task-trigger-btn:hover:not(:disabled) {
 /* Feedback Form Styles */
 .feedback-form {
   display: flex;
+  flex-direction: row;
+  align-items: center;
   gap: 0.8rem;
   margin-top: 1rem;
 }
