@@ -84,10 +84,10 @@ export default function TaskPipeline({ user }) {
       <SankeyChart tasks={tasks} />
 
       {/* Deep-Dive Filters */}
-      <div className="card pipeline-filters" style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-        <div className="input-group" style={{ flex: 1, minWidth: '200px' }}>
-          <label>Filter by Assignee</label>
-          <select value={assigneeFilter} onChange={(e) => setAssigneeFilter(e.target.value)}>
+      <div className="card pipeline-filters" style={{ marginBottom: '2rem', display: 'flex', gap: '1.5rem', alignItems: 'flex-end', flexWrap: 'wrap', padding: '1.5rem' }}>
+        <div className="input-group" style={{ flex: 1, minWidth: '200px', margin: 0 }}>
+          <label style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>Filter by Assignee</label>
+          <select className="modern-select" value={assigneeFilter} onChange={(e) => setAssigneeFilter(e.target.value)}>
             <option value="ALL">All Assignees</option>
             {users
               .filter(u => u.role !== 'CEO' && u.role !== 'COO')
@@ -99,9 +99,9 @@ export default function TaskPipeline({ user }) {
           </select>
         </div>
         
-        <div className="input-group" style={{ flex: 1, minWidth: '200px' }}>
-          <label>Filter by Priority</label>
-          <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
+        <div className="input-group" style={{ flex: 1, minWidth: '200px', margin: 0 }}>
+          <label style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>Filter by Priority</label>
+          <select className="modern-select" value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
             <option value="ALL">All Priorities</option>
             <option value="High">High Priority</option>
             <option value="Medium">Medium Priority</option>
