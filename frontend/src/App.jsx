@@ -21,6 +21,15 @@ function App() {
   });
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
+  
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('renza_theme') || 'light';
+  });
+
+  React.useEffect(() => {
+    document.body.className = theme === 'dark' ? 'dark-theme' : '';
+    localStorage.setItem('renza_theme', theme);
+  }, [theme]);
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -136,6 +145,14 @@ function App() {
         </nav>
         
         <div className="sidebar-footer">
+          <div className="theme-toggle-wrapper" style={{ padding: '0 0.5rem 1rem 0.5rem' }}>
+            <button 
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              style={{ background: '#222', border: '1px solid #333', color: '#fff', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 500, transition: 'all 0.2s ease' }}
+            >
+              {theme === 'light' ? '🌙 Switch to Dark Mode' : '☀️ Switch to Light Mode'}
+            </button>
+          </div>
           <div className="user-info">
             <div className="user-avatar">
               {(user.name ? user.name.charAt(0) : user.email.charAt(0)).toUpperCase()}

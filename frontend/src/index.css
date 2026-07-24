@@ -21,6 +21,22 @@
   --text-secondary: #666666;
 }
 
+body.dark-theme {
+  --bg-color: #121212;
+  --bg-gradient: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #121212 100%);
+  --text-color: #e0e0e0;
+  --text-muted: #888888;
+  --border-color: #333333;
+  --input-bg: #1e1e1e;
+  --hover-bg: #2a2a2a;
+  --accent-color: #ffffff;
+  --accent-text: #000000;
+  --accent-hover: #dddddd;
+  --card-bg: #1a1a1a;
+  --text-secondary: #aaaaaa;
+  --box-bg: rgba(30, 30, 30, 0.8);
+}
+
 /* Custom Scrollbar for Kanban Board */
 .kanban-board::-webkit-scrollbar {
   height: 8px;
