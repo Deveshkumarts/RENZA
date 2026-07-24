@@ -89,8 +89,12 @@ export default function TaskPipeline({ user }) {
           <label>Filter by Assignee</label>
           <select value={assigneeFilter} onChange={(e) => setAssigneeFilter(e.target.value)}>
             <option value="ALL">All Assignees</option>
-            {users.map(u => (
-              <option key={u.id} value={u.id}>{u.name || u.email}</option>
+            {users
+              .filter(u => u.role !== 'CEO' && u.role !== 'COO')
+              .map(u => (
+              <option key={u.id} value={u.id}>
+                {u.name || u.email} {u.category ? `- ${u.category}` : ''}
+              </option>
             ))}
           </select>
         </div>
