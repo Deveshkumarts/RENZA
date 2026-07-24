@@ -17,6 +17,24 @@
   --box-bg: rgba(255, 255, 255, 0.8);
   --glow-color: rgba(0, 0, 0, 0.02);
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --card-bg: #ffffff;
+  --text-secondary: #666666;
+}
+
+/* Custom Scrollbar for Kanban Board */
+.kanban-board::-webkit-scrollbar {
+  height: 8px;
+}
+.kanban-board::-webkit-scrollbar-track {
+  background: var(--input-bg);
+  border-radius: 4px;
+}
+.kanban-board::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+.kanban-board::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
 }
 
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import SankeyChart from './SankeyChart';
 
 function Dashboard({ user, currentView }) {
   const [updates, setUpdates] = useState([]);
@@ -14,7 +13,6 @@ function Dashboard({ user, currentView }) {
   const [newTaskText, setNewTaskText] = useState('');
   const [blockers, setBlockers] = useState('');
   const [file, setFile] = useState(null);
-  const [dashboardTasks, setDashboardTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -38,11 +36,6 @@ function Dashboard({ user, currentView }) {
       const { data, error } = await query;
       if (error) throw error;
       setUpdates(data || []);
-      
-      if (isLeader) {
-        const { data: tData } = await supabase.from('assigned_tasks').select('*');
-        setDashboardTasks(tData || []);
-      }
     } catch (err) {
       console.error('Error fetching updates:', err);
     } finally {
@@ -300,8 +293,6 @@ function Dashboard({ user, currentView }) {
 
       {currentView === 'view' && (
         <div className="updates-container">
-          {isLeader && <SankeyChart tasks={dashboardTasks} />}
-          
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h2 className="dashboard-title" style={{ margin: 0 }}>Recent Updates</h2>
             {isLeader && (

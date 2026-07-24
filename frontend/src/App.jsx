@@ -3,6 +3,7 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Tasks from './components/Tasks';
 import Wiki from './components/Wiki';
+import TaskPipeline from './components/TaskPipeline';
 import './App.css';
 
 function App() {
@@ -116,6 +117,15 @@ function App() {
             <span className="nav-icon">✓</span>
             {isLeader ? 'Assign Tasks' : 'My Tasks'}
           </div>
+          {isLeader && (
+            <div 
+              className={`nav-item ${currentView === 'pipeline' ? 'active' : ''}`}
+              onClick={() => changeView('pipeline')}
+            >
+              <span className="nav-icon">📊</span>
+              Task Pipeline
+            </div>
+          )}
           <div 
             className={`nav-item ${currentView === 'wiki' ? 'active' : ''}`}
             onClick={() => changeView('wiki')}
@@ -147,6 +157,8 @@ function App() {
           <Tasks user={user} />
         ) : currentView === 'wiki' ? (
           <Wiki user={user} />
+        ) : currentView === 'pipeline' && isLeader ? (
+          <TaskPipeline user={user} />
         ) : (
           <Dashboard user={user} currentView={currentView} />
         )}
