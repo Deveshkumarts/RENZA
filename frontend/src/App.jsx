@@ -145,14 +145,6 @@ function App() {
         </nav>
         
         <div className="sidebar-footer">
-          <div className="theme-toggle-wrapper" style={{ padding: '0 0.5rem 1rem 0.5rem' }}>
-            <button 
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-              style={{ background: '#222', border: '1px solid #333', color: '#fff', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 500, transition: 'all 0.2s ease' }}
-            >
-              {theme === 'light' ? '🌙 Switch to Dark Mode' : '☀️ Switch to Light Mode'}
-            </button>
-          </div>
           <div className="user-info">
             <div className="user-avatar">
               {(user.name ? user.name.charAt(0) : user.email.charAt(0)).toUpperCase()}
@@ -169,7 +161,16 @@ function App() {
         </div>
       </aside>
       
-      <main className="main-content">
+      <main className="main-content" style={{ position: 'relative' }}>
+        <button 
+          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+          style={{ position: 'absolute', top: '1.5rem', right: '2rem', background: 'var(--card-bg)', border: '1px solid var(--border-color)', color: 'var(--text-color)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', zIndex: 100, boxShadow: 'var(--card-shadow)', transition: 'transform 0.2s ease' }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+        >
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
         {currentView === 'tasks' ? (
           <Tasks user={user} />
         ) : currentView === 'wiki' ? (
