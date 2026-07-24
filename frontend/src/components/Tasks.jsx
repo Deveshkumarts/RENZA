@@ -13,6 +13,7 @@ function Tasks({ user }) {
   const [priority, setPriority] = useState('Medium');
   const [file, setFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [commentTexts, setCommentTexts] = useState({});
   
   const isLeader = user.role === 'CEO' || user.role === 'COO';
 
@@ -30,7 +31,13 @@ function Tasks({ user }) {
         .select(`
           *,
           assigner:users!assigned_tasks_assigner_id_fkey(name, email),
-          assignee:users!assigned_tasks_assignee_id_fkey(name, email)
+          assignee:users!assigned_tasks_assignee_id_fkey(name, email),
+          task_comments(
+            id,
+            comment,
+            created_at,
+            author:users!task_comments_author_id_fkey(name, email, role, category)
+          )
         `);
         
       if (isLeader) {
@@ -125,6 +132,30 @@ function Tasks({ user }) {
       if (!error) fetchData();
     } catch (err) {
       console.error('Error updating task status:', err);
+    }
+  };
+
+  const handlePostComment = async (taskId) => {
+    const text = commentTexts[taskId];
+    if (!text || !text.trim()) return;
+    
+    try {
+      const { error } = await supabase
+        .from('task_comments')
+        .insert([{
+          task_id: taskId,
+          author_id: user.id,
+          comment: text.trim()
+        }]);
+        
+      if (!error) {
+        setCommentTexts(prev => ({ ...prev, [taskId]: '' }));
+        fetchData(); // Refresh tasks to show new comment
+      } else {
+        alert('Failed to post comment: ' + error.message);
+      }
+    } catch (err) {
+      console.error('Error posting comment:', err);
     }
   };
 
@@ -254,6 +285,34 @@ function Tasks({ user }) {
                       {task.status.toUpperCase()}
                     </span>
                   )}
+                </div>
+
+                {/* Task Clarification Threads */}
+                <div className="task-comments-section">
+                  {task.task_comments && task.task_comments.length > 0 && (
+                    <div className="task-comments-list">
+                      {task.task_comments.sort((a,b) => new Date(a.created_at) - new Date(b.created_at)).map(comment => (
+                        <div key={comment.id} className="task-comment">
+                          <div className="comment-header">
+                            <strong>{comment.author?.name || comment.author?.email}</strong>
+                            <span className="comment-role">{comment.author?.role}</span>
+                            <span className="comment-time">{new Date(comment.created_at).toLocaleString([], {hour: '2-digit', minute:'2-digit', month:'short', day:'numeric'})}</span>
+                          </div>
+                          <div className="comment-body">{comment.comment}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="task-comment-input-wrapper">
+                    <input 
+                      type="text" 
+                      placeholder="Ask a question or add a comment..." 
+                      value={commentTexts[task.id] || ''}
+                      onChange={(e) => setCommentTexts(prev => ({...prev, [task.id]: e.target.value}))}
+                      onKeyDown={(e) => e.key === 'Enter' && handlePostComment(task.id)}
+                    />
+                    <button onClick={() => handlePostComment(task.id)}>Post</button>
+                  </div>
                 </div>
               </div>
             ))}
