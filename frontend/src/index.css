@@ -721,9 +721,34 @@ textarea {
 }
 
 .task-status-badge.completed {
-  background: #d4edda;
-  color: #155724;
+  background: var(--success-bg);
+  color: var(--success-text);
 }
+
+.task-status-badge.in_progress {
+  background: rgba(255, 198, 88, 0.2);
+  color: #ffc658;
+}
+
+.task-status-badge.blocked {
+  background: rgba(255, 77, 79, 0.2);
+  color: #ff4d4f;
+}
+
+.task-status-selector {
+  margin-top: 1rem;
+}
+
+.status-select {
+  outline: none;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.status-select.pending { color: var(--text-secondary); }
+.status-select.in_progress { color: #ffc658; border-color: #ffc658; }
+.status-select.blocked { color: #ff4d4f; border-color: #ff4d4f; }
+.status-select.completed { color: var(--success-text); border-color: var(--success-text); }
 
 /* Enhancements for Massive Update */
 

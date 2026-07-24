@@ -49,10 +49,11 @@ function Tasks({ user }) {
       const { data: tasksData, error: tasksError } = await query;
       
       if (!tasksError && tasksData) {
-        // Sort tasks: pending High -> pending Medium -> pending Low -> completed
+        // Sort tasks: pending -> in_progress -> blocked -> completed
         const priorityWeight = { 'High': 3, 'Medium': 2, 'Low': 1 };
+        const statusWeight = { 'pending': 4, 'in_progress': 3, 'blocked': 2, 'completed': 1 };
         tasksData.sort((a, b) => {
-          if (a.status !== b.status) return a.status === 'pending' ? -1 : 1;
+          if (a.status !== b.status) return (statusWeight[b.status] || 0) - (statusWeight[a.status] || 0);
           return priorityWeight[b.priority] - priorityWeight[a.priority];
         });
         setTasks(tasksData);
@@ -136,8 +137,7 @@ function Tasks({ user }) {
     }
   };
 
-  const handleToggleStatus = async (taskId, currentStatus) => {
-    const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+  const handleStatusChange = async (taskId, newStatus) => {
     try {
       const { error } = await supabase
         .from('assigned_tasks')
@@ -296,17 +296,22 @@ function Tasks({ user }) {
                   </div>
                   
                   {(!isLeader || user.id === task.assignee_id) ? (
-                    <label className="task-checkbox-wrapper">
-                      <input 
-                        type="checkbox" 
-                        checked={task.status === 'completed'}
-                        onChange={() => handleToggleStatus(task.id, task.status)}
-                      />
-                      <span className="task-checkbox-label">Mark completed</span>
-                    </label>
+                    <div className="task-status-selector">
+                      <select 
+                        value={task.status} 
+                        onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                        className={`status-select ${task.status}`}
+                        style={{ padding: '0.4rem 0.8rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'var(--text-color)', fontWeight: 'bold' }}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="blocked">Blocked</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                    </div>
                   ) : (
                     <span className={`task-status-badge ${task.status}`}>
-                      {task.status.toUpperCase()}
+                      {task.status.replace('_', ' ').toUpperCase()}
                     </span>
                   )}
                 </div>
