@@ -138,6 +138,21 @@ function Dashboard({ user, currentView }) {
     }
   };
 
+  const handleDeleteFeedback = async (feedbackId) => {
+    if (!window.confirm("Are you sure you want to delete this feedback?")) return;
+    try {
+      const { error } = await supabase
+        .from('feedback')
+        .delete()
+        .eq('id', feedbackId);
+      if (error) throw error;
+      fetchUpdates();
+    } catch (err) {
+      console.error('Error deleting feedback:', err);
+      alert('Failed to delete feedback: ' + err.message);
+    }
+  };
+
   const exportCSV = () => {
     const escapeCsv = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
     const headers = ['ID', 'Name', 'Email', 'Category', 'Accomplished', 'Planned', 'Blockers', 'Date'];
@@ -327,8 +342,19 @@ function Dashboard({ user, currentView }) {
                     {update.feedback && update.feedback.length > 0 ? (
                       <div className="feedback-list">
                         {update.feedback.map(f => (
-                          <div key={f.id} className="feedback-item">
-                            <strong>{f.author?.name || f.author?.email}:</strong> {f.comment}
+                          <div key={f.id} className="feedback-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                              <strong>{f.author?.name || f.author?.email}:</strong> {f.comment}
+                            </div>
+                            {(isLeader || user.id === f.author_id) && (
+                              <button 
+                                onClick={() => handleDeleteFeedback(f.id)}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ff4d4f', fontSize: '1rem', padding: '0 0.5rem' }}
+                                title="Delete feedback"
+                              >
+                                🗑️
+                              </button>
+                            )}
                           </div>
                         ))}
                       </div>
