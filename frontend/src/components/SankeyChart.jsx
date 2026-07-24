@@ -1,30 +1,10 @@
 import React from 'react';
-import { Sankey, Tooltip, ResponsiveContainer } from 'recharts';
-
-const MyCustomNode = ({ x, y, width, height, index, payload, containerWidth }) => {
-  const COLORS = ['#ffffff', '#ffc658', '#82ca9d', '#ff4d4f', '#52c41a'];
-  return (
-    <g>
-      <rect x={x} y={y} width={width} height={height} fill={COLORS[index % COLORS.length]} rx="2" />
-      <text
-        x={x < containerWidth / 2 ? x + width + 10 : x - 10}
-        y={y + height / 2}
-        dy="0.35em"
-        textAnchor={x < containerWidth / 2 ? 'start' : 'end'}
-        fill="var(--text-color)"
-        fontSize="14"
-        fontWeight="bold"
-      >
-        {payload.name} ({payload.value})
-      </text>
-    </g>
-  );
-};
 
 export default function SankeyChart({ tasks }) {
-  if (!tasks || tasks.length === 0) return null;
+  if (!tasks) return null;
 
   const counts = {
+    total: tasks.length,
     pending: 0,
     in_progress: 0,
     blocked: 0,
@@ -37,45 +17,66 @@ export default function SankeyChart({ tasks }) {
     }
   });
 
-  const nodes = [
-    { name: 'Total Assigned' }, // 0
-    { name: 'Pending' },        // 1
-    { name: 'In Progress' },    // 2
-    { name: 'Blocked' },        // 3
-    { name: 'Completed' }       // 4
+  const flowSteps = [
+    { id: 'total', label: 'Total Assigned', value: counts.total, color: 'var(--text-color)', bg: 'var(--input-bg)' },
+    { id: 'pending', label: 'Pending', value: counts.pending, color: 'var(--text-secondary)', bg: 'rgba(156, 163, 175, 0.1)' },
+    { id: 'in_progress', label: 'In Progress', value: counts.in_progress, color: '#ffc658', bg: 'rgba(255, 198, 88, 0.1)' },
+    { id: 'blocked', label: 'Blocked', value: counts.blocked, color: '#ff4d4f', bg: 'rgba(255, 77, 79, 0.1)' },
+    { id: 'completed', label: 'Completed', value: counts.completed, color: 'var(--success-text)', bg: 'rgba(82, 196, 26, 0.1)' }
   ];
 
-  const links = [];
-  if (counts.pending > 0) links.push({ source: 0, target: 1, value: counts.pending });
-  if (counts.in_progress > 0) links.push({ source: 0, target: 2, value: counts.in_progress });
-  if (counts.blocked > 0) links.push({ source: 0, target: 3, value: counts.blocked });
-  if (counts.completed > 0) links.push({ source: 0, target: 4, value: counts.completed });
-
-  if (links.length === 0) return null;
-
-  const data = { nodes, links };
-
   return (
-    <div className="card" style={{ marginBottom: '2rem', height: '400px' }}>
-      <h3 className="dashboard-title">Task Bottleneck Flow</h3>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-        Visualize where tasks are accumulating to identify bottlenecks.
+    <div className="card" style={{ marginBottom: '2rem' }}>
+      <h3 className="dashboard-title">Task Pipeline</h3>
+      <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+        Live overview of all tasks and their current stage in the pipeline.
       </p>
-      <div style={{ width: '100%', height: '80%' }}>
-        <ResponsiveContainer>
-          <Sankey
-            data={data}
-            nodePadding={50}
-            margin={{ top: 20, right: 100, bottom: 20, left: 100 }}
-            link={{ stroke: '#555', strokeOpacity: 0.5 }}
-            node={<MyCustomNode />}
-          >
-            <Tooltip 
-              contentStyle={{ backgroundColor: '#222', border: '1px solid #444', color: '#fff' }}
-              itemStyle={{ color: '#fff' }}
-            />
-          </Sankey>
-        </ResponsiveContainer>
+      
+      <div style={{ 
+        display: 'flex', 
+        flexWrap: 'wrap',
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        gap: '1rem'
+      }}>
+        {flowSteps.map((step, index) => (
+          <React.Fragment key={step.id}>
+            <div style={{
+              flex: '1 1 auto',
+              minWidth: '120px',
+              padding: '1.5rem 1rem',
+              borderRadius: '12px',
+              background: step.bg,
+              border: `1px solid ${step.color}33`,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+              transition: 'transform 0.2s ease',
+              cursor: 'default'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              <span style={{ fontSize: '2.5rem', fontWeight: '800', color: step.color, lineHeight: '1' }}>
+                {step.value}
+              </span>
+              <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-secondary)', marginTop: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                {step.label}
+              </span>
+            </div>
+            
+            {/* Arrow separator (don't show after the last item) */}
+            {index < flowSteps.length - 1 && (
+              <div style={{ color: 'var(--text-secondary)', opacity: 0.5, display: 'flex', alignItems: 'center' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            )}
+          </React.Fragment>
+        ))}
       </div>
     </div>
   );
