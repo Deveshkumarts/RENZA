@@ -221,20 +221,23 @@ p { margin: 0; line-height: 1.5; }
 }
 
 .logout-text-btn {
-  background: transparent;
-  border: 1px solid #333;
-  color: #ccc;
+  background-color: #ff4d4f;
+  border: none;
+  color: #fff;
   cursor: pointer;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.2);
 }
 
 .logout-text-btn:hover {
-  background-color: #222;
+  background-color: #ff7875;
   color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 77, 79, 0.3);
 }
 
 .main-content {
