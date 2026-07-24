@@ -121,6 +121,21 @@ function Tasks({ user }) {
     }
   };
 
+  const handleDeleteTask = async (taskId) => {
+    if (!window.confirm("Are you sure you want to delete this assigned task?")) return;
+    try {
+      const { error } = await supabase
+        .from('assigned_tasks')
+        .delete()
+        .eq('id', taskId);
+      if (error) throw error;
+      fetchData();
+    } catch (err) {
+      console.error('Error deleting task:', err);
+      alert('Failed to delete task: ' + err.message);
+    }
+  };
+
   const handleToggleStatus = async (taskId, currentStatus) => {
     const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
     try {
@@ -255,6 +270,15 @@ function Tasks({ user }) {
                     <span className={`priority-badge ${task.priority.toLowerCase()}`}>{task.priority} Priority</span>
                     {task.due_date && <span className="due-date-badge">Due: {new Date(task.due_date).toLocaleDateString()}</span>}
                     <span className="task-date">{new Date(task.created_at).toLocaleString()}</span>
+                    {isLeader && (
+                      <button 
+                        onClick={() => handleDeleteTask(task.id)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ff4d4f', fontSize: '1.2rem', padding: '0 0.5rem', marginLeft: '0.5rem' }}
+                        title="Delete task"
+                      >
+                        🗑️
+                      </button>
+                    )}
                   </div>
                 </div>
                 
