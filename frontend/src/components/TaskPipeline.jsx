@@ -78,14 +78,14 @@ export default function TaskPipeline({ user }) {
   }
 
   return (
-    <div className="task-pipeline-container animate-fade-in" style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="task-pipeline-container animate-fade-in">
       
       {/* Metric Boxes */}
       <SankeyChart tasks={tasks} />
 
       {/* Deep-Dive Filters */}
-      <div className="card pipeline-filters" style={{ marginBottom: '2rem', display: 'flex', gap: '1.5rem', alignItems: 'flex-end', flexWrap: 'wrap', padding: '1.5rem' }}>
-        <div className="input-group" style={{ flex: 1, minWidth: '200px', margin: 0 }}>
+      <div className="card pipeline-filters">
+        <div className="input-group">
           <label style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>Filter by Assignee</label>
           <select className="modern-select" value={assigneeFilter} onChange={(e) => setAssigneeFilter(e.target.value)}>
             <option value="ALL">All Assignees</option>
@@ -99,7 +99,7 @@ export default function TaskPipeline({ user }) {
           </select>
         </div>
         
-        <div className="input-group" style={{ flex: 1, minWidth: '200px', margin: 0 }}>
+        <div className="input-group">
           <label style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>Filter by Priority</label>
           <select className="modern-select" value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
             <option value="ALL">All Priorities</option>
@@ -109,7 +109,7 @@ export default function TaskPipeline({ user }) {
           </select>
         </div>
         
-        <div style={{ paddingBottom: '0.5rem' }}>
+        <div className="pipeline-filters-count">
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Showing {filteredTasks.length} task(s)
           </span>
@@ -117,9 +117,9 @@ export default function TaskPipeline({ user }) {
       </div>
 
       {/* Kanban Board */}
-      <div className="kanban-board" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1rem' }}>
+      <div className="kanban-board">
         {columns.map(col => (
-          <div key={col.id} className="kanban-column" style={{ flex: 1, minWidth: '300px', backgroundColor: 'var(--card-bg)', borderRadius: '12px', padding: '1rem', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div key={col.id} className="kanban-column">
             <h3 style={{ margin: 0, paddingBottom: '1rem', borderBottom: '2px solid var(--border-color)', display: 'flex', justifyContent: 'space-between' }}>
               {col.title}
               <span style={{ fontSize: '0.9rem', backgroundColor: 'var(--input-bg)', padding: '0.2rem 0.6rem', borderRadius: '12px' }}>

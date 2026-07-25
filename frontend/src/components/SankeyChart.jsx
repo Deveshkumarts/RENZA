@@ -32,32 +32,15 @@ export default function SankeyChart({ tasks }) {
         Live overview of all tasks and their current stage in the pipeline.
       </p>
       
-      <div style={{ 
-        display: 'flex', 
-        flexWrap: 'wrap',
-        alignItems: 'center', 
-        justifyContent: 'space-between',
-        gap: '1rem'
-      }}>
+      <div className="metrics-container">
         {flowSteps.map((step, index) => (
           <React.Fragment key={step.id}>
-            <div style={{
-              flex: '1 1 auto',
-              minWidth: '120px',
-              padding: '1.5rem 1rem',
-              borderRadius: '12px',
-              background: step.bg,
-              border: `1px solid ${step.color}33`,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
-              transition: 'transform 0.2s ease',
-              cursor: 'default'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            <div 
+              className="metric-box"
+              style={{
+                background: step.bg,
+                border: `1px solid ${step.color}33`,
+              }}
             >
               <span style={{ fontSize: '2.5rem', fontWeight: '800', color: step.color, lineHeight: '1' }}>
                 {step.value}

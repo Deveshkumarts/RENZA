@@ -1048,6 +1048,79 @@ button.add-task-trigger-btn:hover:not(:disabled) {
 }
 
 /* =========================================
+   Task Pipeline & Kanban
+   ========================================= */
+.task-pipeline-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.pipeline-filters {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  padding: 1.5rem;
+}
+
+.pipeline-filters .input-group {
+  flex: 1;
+  min-width: 200px;
+  margin: 0;
+}
+
+.pipeline-filters-count {
+  padding-bottom: 0.5rem;
+}
+
+.kanban-board {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.kanban-column {
+  flex: 1;
+  min-width: 300px;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.metrics-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.metric-box {
+  flex: 1 1 auto;
+  min-width: 120px;
+  padding: 1.5rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+  cursor: default;
+}
+
+.metric-box:hover {
+  transform: translateY(-2px);
+}
+
+/* =========================================
    Mobile Responsiveness
    ========================================= */
 @media (max-width: 768px) {
@@ -1207,6 +1280,34 @@ button.add-task-trigger-btn:hover:not(:disabled) {
   
   .form-row .input-group {
     width: 100%;
+  }
+  
+  /* Pipeline & Kanban Mobile Layout */
+  .task-pipeline-container {
+    padding: 1rem 0;
+  }
+  
+  .card {
+    padding: 1.5rem;
+  }
+  
+  .pipeline-filters {
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+  
+  .pipeline-filters .input-group {
+    min-width: 100%;
+  }
+  
+  .metric-box {
+    min-width: 45%;
+    flex: 1 1 45%;
+    padding: 1rem;
+  }
+  
+  .kanban-column {
+    min-width: 85vw; /* Allow peeking of next column */
   }
 }
 
