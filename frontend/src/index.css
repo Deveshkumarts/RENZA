@@ -980,8 +980,8 @@ button.add-task-trigger-btn:hover:not(:disabled) {
 .radio-label:has(input:checked) {
   background-color: #000000;
   color: #ffcc00;
-  border-color: #000000;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-color: #ffcc00;
+  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.15);
 }
 
 .radio-label input[type="radio"] {
