@@ -60,7 +60,7 @@ export default function TaskPipeline({ user }) {
 
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
-      const matchAssignee = assigneeFilter === 'ALL' || task.assignee_id === assigneeFilter;
+      const matchAssignee = assigneeFilter === 'ALL' || String(task.assignee_id) === String(assigneeFilter);
       const matchPriority = priorityFilter === 'ALL' || task.priority === priorityFilter;
       return matchAssignee && matchPriority;
     });
