@@ -978,9 +978,9 @@ button.add-task-trigger-btn:hover:not(:disabled) {
 }
 
 .radio-label:has(input:checked) {
-  background-color: var(--text-color);
-  color: var(--bg-color);
-  border-color: var(--text-color);
+  background-color: #000000;
+  color: var(--accent-color);
+  border-color: #000000;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
