@@ -4,6 +4,7 @@ import Dashboard from './components/Dashboard';
 import Tasks from './components/Tasks';
 import Wiki from './components/Wiki';
 import TaskPipeline from './components/TaskPipeline';
+import CompanyUpdates from './components/CompanyUpdates';
 import './App.css';
 
 function App() {
@@ -153,6 +154,13 @@ function App() {
             <span className="nav-icon">📚</span>
             Company Wiki
           </div>
+          <div 
+            className={`nav-item ${currentView === 'updates' ? 'active' : ''}`}
+            onClick={() => changeView('updates')}
+          >
+            <span className="nav-icon">📢</span>
+            Company Updates
+          </div>
         </nav>
         
         <div className="sidebar-footer">
@@ -189,6 +197,8 @@ function App() {
           <Wiki user={user} />
         ) : currentView === 'pipeline' && isLeader ? (
           <TaskPipeline user={user} />
+        ) : currentView === 'updates' ? (
+          <CompanyUpdates user={user} />
         ) : (
           <Dashboard user={user} currentView={currentView} />
         )}
