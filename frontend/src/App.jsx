@@ -32,12 +32,15 @@ function App() {
   }, [theme]);
 
   React.useEffect(() => {
+    let lastWidth = window.innerWidth;
     const handleResize = () => {
-      if (window.innerWidth <= 768) {
+      const currentWidth = window.innerWidth;
+      if (lastWidth > 768 && currentWidth <= 768) {
         setIsSidebarOpen(false);
-      } else {
+      } else if (lastWidth <= 768 && currentWidth > 768) {
         setIsSidebarOpen(true);
       }
+      lastWidth = currentWidth;
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
