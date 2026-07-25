@@ -84,6 +84,14 @@ function App() {
           <img src="/logo.png" alt="Renza Logo" className="mobile-header-logo" />
           <h2>Renza</h2>
         </div>
+        <button 
+          className="mobile-theme-toggle"
+          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+          style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.2rem', cursor: 'pointer', padding: '0 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
       </div>
 
       {!isSidebarOpen && window.innerWidth > 768 && (
@@ -163,6 +171,7 @@ function App() {
       
       <main className="main-content" style={{ position: 'relative' }}>
         <button 
+          className="desktop-theme-toggle"
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
           title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
           style={{ position: 'absolute', top: '1.5rem', right: '2rem', background: 'var(--card-bg)', border: '1px solid var(--border-color)', color: 'var(--text-color)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', zIndex: 100, boxShadow: 'var(--card-shadow)', transition: 'transform 0.2s ease' }}
