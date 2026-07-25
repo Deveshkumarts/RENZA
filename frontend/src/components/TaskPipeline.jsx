@@ -143,17 +143,9 @@ export default function TaskPipeline({ user }) {
                       Assignee: {task.assignee?.name || task.assignee?.email}
                     </span>
                     
-                    <select 
-                      value={task.status} 
-                      onChange={(e) => handleStatusChange(task.id, e.target.value)}
-                      className={`status-select ${task.status}`}
-                      style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'var(--text-color)' }}
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="in_progress">In Progress</option>
-                      <option value="blocked">Blocked</option>
-                      <option value="completed">Completed</option>
-                    </select>
+                    <span className={`task-status-badge ${task.status}`} style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}>
+                      {task.status.replace('_', ' ').toUpperCase()}
+                    </span>
                   </div>
                   
                 </div>
