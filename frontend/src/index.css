@@ -951,7 +951,7 @@ button.add-task-trigger-btn:hover:not(:disabled) {
 .input-group label {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #444;
+  color: var(--text-color);
   margin-bottom: 0.8rem;
 }
 
@@ -968,19 +968,19 @@ button.add-task-trigger-btn:hover:not(:disabled) {
   justify-content: center;
   padding: 0.6rem 1.5rem;
   border-radius: 999px;
-  background-color: #f4f5f7;
-  color: #555;
+  background-color: var(--input-bg);
+  color: var(--text-color);
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 600;
   transition: all 0.2s ease;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-color);
 }
 
 .radio-label:has(input:checked) {
-  background-color: #000000;
-  color: #ffcc00;
-  border-color: #000000;
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  border-color: var(--text-color);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
