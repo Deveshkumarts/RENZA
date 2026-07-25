@@ -22,19 +22,19 @@
 }
 
 body.dark-theme {
-  --bg-color: #121212;
-  --bg-gradient: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #121212 100%);
-  --text-color: #e0e0e0;
-  --text-muted: #888888;
-  --border-color: #333333;
-  --input-bg: #1e1e1e;
-  --hover-bg: #2a2a2a;
-  --accent-color: #ffffff;
+  --bg-color: #0e0e0e;
+  --bg-gradient: none;
+  --text-color: #ffffff;
+  --text-muted: #a1a1aa;
+  --border-color: #2a2a2a;
+  --input-bg: #1a1a1a;
+  --hover-bg: #222222;
+  --accent-color: #ffcc00;
   --accent-text: #000000;
-  --accent-hover: #dddddd;
-  --card-bg: #1a1a1a;
-  --text-secondary: #aaaaaa;
-  --box-bg: rgba(30, 30, 30, 0.8);
+  --accent-hover: #e6b800;
+  --card-bg: #161616;
+  --text-secondary: #a1a1aa;
+  --box-bg: rgba(22, 22, 22, 0.8);
 }
 
 /* Custom Scrollbar for Kanban Board */
@@ -181,17 +181,24 @@ p { margin: 0; line-height: 1.5; }
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  color: #cccccc;
+  color: #a1a1aa;
   text-decoration: none;
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.2s ease;
   cursor: pointer;
+  border: 1px solid transparent;
 }
 
-.nav-item:hover, .nav-item.active {
+.nav-item:hover {
   background-color: #1a1a1a;
   color: #ffffff;
+}
+
+.nav-item.active {
+  background-color: rgba(255, 204, 0, 0.05);
+  color: #ffcc00;
+  border: 1px solid rgba(255, 204, 0, 0.2);
 }
 
 .sidebar-footer {
@@ -261,24 +268,25 @@ p { margin: 0; line-height: 1.5; }
 }
 
 .logout-text-btn {
-  background-color: #ff4d4f;
-  border: none;
-  color: #fff;
+  background-color: transparent;
+  border: 1px solid rgba(255, 77, 79, 0.3);
+  color: #ff4d4f;
   cursor: pointer;
-  padding: 0.5rem 0.8rem;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.2);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .logout-text-btn:hover {
-  background-color: #ff7875;
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(255, 77, 79, 0.3);
+  background-color: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+  border-color: rgba(255, 77, 79, 0.5);
 }
 
 .main-content {
