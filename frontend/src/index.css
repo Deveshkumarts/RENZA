@@ -717,8 +717,8 @@ textarea {
 }
 
 .assigned-task-item.completed {
-  opacity: 0.7;
-  background: #f9f9f9;
+  opacity: 0.5;
+  background: var(--hover-bg);
 }
 
 .task-header {
