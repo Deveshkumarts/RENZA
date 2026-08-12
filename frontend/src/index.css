@@ -642,7 +642,7 @@ textarea {
 .task-item {
   display: flex;
   align-items: center;
-  background: #f4f5f7;
+  background: var(--input-bg);
   padding: 0.8rem 1rem;
   border-radius: 8px;
   gap: 0.8rem;
