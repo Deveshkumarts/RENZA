@@ -31,7 +31,7 @@ function Dashboard({ user, currentView }) {
         .order('created_at', { ascending: false });
         
       if (!isLeader) {
-        query = query.eq('user_id', user.id);
+        query = query.eq('category', user.category);
       }
       const { data, error } = await query;
       if (error) throw error;
