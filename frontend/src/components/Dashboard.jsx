@@ -152,6 +152,21 @@ function Dashboard({ user, currentView }) {
     }
   };
 
+  const handleDeleteUpdate = async (updateId) => {
+    if (!window.confirm("Are you sure you want to delete this update?")) return;
+    try {
+      const { error } = await supabase
+        .from('updates')
+        .delete()
+        .eq('id', updateId);
+      if (error) throw error;
+      fetchUpdates();
+    } catch (err) {
+      console.error('Error deleting update:', err);
+      alert('Failed to delete update: ' + err.message);
+    }
+  };
+
   const exportCSV = () => {
     const escapeCsv = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
     const headers = ['ID', 'Name', 'Email', 'Category', 'Accomplished', 'Planned', 'Blockers', 'Date'];
@@ -308,7 +323,19 @@ function Dashboard({ user, currentView }) {
               <div key={update.id} className="card update-card">
                 <div className="card-header">
                   <span><strong>{update.user?.name || update.user?.email}</strong> ({update.category || 'MEMBER'})</span>
-                  <span>{new Date(update.created_at).toLocaleString()}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <span>{new Date(update.created_at).toLocaleString()}</span>
+                    {update.user_id === user.id && (
+                      <button 
+                        onClick={() => handleDeleteUpdate(update.id)}
+                        className="remove-task-btn"
+                        title="Delete Update"
+                        style={{ fontSize: '1.2rem', padding: '0' }}
+                      >
+                        🗑️
+                      </button>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="update-content">
