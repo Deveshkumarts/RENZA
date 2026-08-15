@@ -5,6 +5,7 @@ import Tasks from './components/Tasks';
 import Wiki from './components/Wiki';
 import TaskPipeline from './components/TaskPipeline';
 import CompanyUpdates from './components/CompanyUpdates';
+import Profile from './components/Profile';
 import './App.css';
 
 function App() {
@@ -163,20 +164,22 @@ function App() {
           </div>
         </nav>
         
-        <div className="sidebar-footer">
-          <div className="user-info">
-            <div className="user-avatar">
-              {(user.name ? user.name.charAt(0) : user.email.charAt(0)).toUpperCase()}
+        <div className="sidebar-footer" style={{ padding: '1rem', borderTop: '1px solid var(--border-color)' }}>
+          <div className="user-profile-widget" onClick={() => changeView('profile')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '0.5rem' }}>
+            <div className="user-info" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflow: 'hidden', flex: 1 }}>
+              <div className="user-avatar" style={{ backgroundColor: '#ffc107', color: '#000', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: 'bold', flexShrink: 0, fontSize: '1.2rem' }}>
+                {(user.name ? user.name.charAt(0) : user.email.charAt(0)).toUpperCase()}
+              </div>
+              <div className="user-details" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
+                <span className="user-name" style={{ fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.95rem' }}>{user.name || user.email.split('@')[0]}</span>
+                <span className="user-email" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.email}</span>
+                <span className="user-role" style={{ fontSize: '0.7rem', fontWeight: 'bold', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '0.1rem' }}>{user.category || 'TECHNICAL'}</span>
+              </div>
             </div>
-            <div className="user-details">
-              <span className="user-name">{user.name || user.email.split('@')[0]}</span>
-              <span className="user-email">{user.email}</span>
-              <span className="user-role">{user.category || 'Technical'}</span>
-            </div>
+            <button className="logout-outline-btn" onClick={(e) => { e.stopPropagation(); handleLogout(); }} style={{ background: 'transparent', border: '1px solid #ef4444', color: '#ef4444', padding: '0.4rem 0.75rem', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', flexShrink: 0, fontSize: '0.85rem' }}>
+              Logout
+            </button>
           </div>
-          <button className="logout-text-btn" onClick={handleLogout}>
-            Logout
-          </button>
         </div>
       </aside>
       
@@ -199,6 +202,8 @@ function App() {
           <TaskPipeline user={user} />
         ) : currentView === 'updates' ? (
           <CompanyUpdates user={user} />
+        ) : currentView === 'profile' ? (
+          <Profile user={user} />
         ) : (
           <Dashboard user={user} currentView={currentView} />
         )}

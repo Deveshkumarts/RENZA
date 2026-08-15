@@ -159,6 +159,39 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
+// Profile Endpoint
+app.get('/api/profile/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // First get the user basic info
+    const userQuery = await db.query('SELECT id, email, name, role, category FROM users WHERE id = $1', [userId]);
+    if (userQuery.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const user = userQuery.rows[0];
+
+    // Then get employee profile details
+    let profile = {};
+    try {
+      const profileQuery = await db.query('SELECT * FROM employee_profiles WHERE user_id = $1', [userId]);
+      if (profileQuery.rows.length > 0) {
+        profile = profileQuery.rows[0];
+      }
+    } catch (e) {
+      console.warn('Could not fetch employee_profiles. Table might not exist yet.');
+    }
+
+    res.json({
+      ...user,
+      ...profile
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Assigned Tasks Endpoints
 app.get('/api/tasks', async (req, res) => {
   try {
