@@ -269,10 +269,10 @@ p { margin: 0; line-height: 1.5; }
 
 .logout-text-btn {
   background-color: transparent;
-  border: 1px solid rgba(255, 77, 79, 0.3);
-  color: #ff4d4f;
+  border: none;
+  color: var(--text-muted);
   cursor: pointer;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -280,13 +280,13 @@ p { margin: 0; line-height: 1.5; }
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
 }
 
 .logout-text-btn:hover {
   background-color: rgba(255, 77, 79, 0.1);
   color: #ff4d4f;
-  border-color: rgba(255, 77, 79, 0.5);
 }
 
 .main-content {
