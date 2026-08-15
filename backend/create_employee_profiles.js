@@ -9,11 +9,12 @@ async function run() {
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         phone VARCHAR(50),
         gender VARCHAR(50),
-        college_work VARCHAR(255),
-        year_experience VARCHAR(100),
+        college_name VARCHAR(255),
+        year_and_sem VARCHAR(100),
         age INTEGER,
         dob DATE,
-        current_city VARCHAR(255),
+        state VARCHAR(255),
+        city VARCHAR(255),
         domain VARCHAR(255),
         UNIQUE(user_id)
       );

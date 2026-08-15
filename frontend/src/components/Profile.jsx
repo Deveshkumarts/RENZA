@@ -56,11 +56,12 @@ function Profile({ user }) {
         setEditData({
           phone: combinedData.phone || '',
           gender: combinedData.gender || '',
-          college_work: combinedData.college_work || '',
-          year_experience: combinedData.year_experience || '',
+          college_name: combinedData.college_name || '',
+          year_and_sem: combinedData.year_and_sem || '',
           age: combinedData.age || '',
           dob: combinedData.dob ? new Date(combinedData.dob).toISOString().split('T')[0] : '',
-          current_city: combinedData.current_city || '',
+          state: combinedData.state || '',
+          city: combinedData.city || '',
           domain: combinedData.domain || ''
         });
       } catch (err) {
@@ -80,11 +81,12 @@ function Profile({ user }) {
         user_id: selectedUserId,
         phone: editData.phone,
         gender: editData.gender,
-        college_work: editData.college_work,
-        year_experience: editData.year_experience,
+        college_name: editData.college_name,
+        year_and_sem: editData.year_and_sem,
         age: editData.age ? parseInt(editData.age) : null,
         dob: editData.dob || null,
-        current_city: editData.current_city,
+        state: editData.state,
+        city: editData.city,
         domain: editData.domain
       };
 
@@ -171,14 +173,15 @@ function Profile({ user }) {
 
         {/* Editable Fields */}
         {[
-          { key: 'phone', label: 'Phone No', type: 'text' },
+          { key: 'phone', label: 'Phone', type: 'text' },
           { key: 'gender', label: 'Gender', type: 'text' },
-          { key: 'college_work', label: 'College / Work', type: 'text' },
-          { key: 'year_experience', label: 'Year / Experience', type: 'text' },
+          { key: 'college_name', label: 'College Name', type: 'text' },
+          { key: 'year_and_sem', label: 'Year and Sem', type: 'text' },
           { key: 'age', label: 'Age', type: 'number' },
           { key: 'dob', label: 'DOB', type: 'date' },
-          { key: 'current_city', label: 'Current City', type: 'text' },
-          { key: 'domain', label: 'Domain', type: 'text' }
+          { key: 'state', label: 'State', type: 'text' },
+          { key: 'city', label: 'City', type: 'text' },
+          { key: 'domain', label: 'Domain in RENZA', type: 'text' }
         ].map(field => (
           <div className="profile-detail-card" key={field.key}>
             <label>{field.label}</label>
