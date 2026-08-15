@@ -10,7 +10,7 @@ async function run() {
         phone VARCHAR(50),
         gender VARCHAR(50),
         college_name VARCHAR(255),
-        year_and_sem VARCHAR(100),
+        year VARCHAR(100),
         age INTEGER,
         dob DATE,
         state VARCHAR(255),
