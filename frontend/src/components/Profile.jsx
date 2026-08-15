@@ -3,17 +3,40 @@ import { supabase } from '../supabaseClient';
 import './Profile.css';
 
 function Profile({ user }) {
+  const isLeader = user.role === 'CEO' || user.role === 'COO';
+  
+  const [selectedUserId, setSelectedUserId] = useState(user.id);
+  const [allUsers, setAllUsers] = useState([]);
+  
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({});
+  const [saving, setSaving] = useState(false);
+
+  // Fetch all users for dropdown if leader
+  useEffect(() => {
+    if (isLeader) {
+      const fetchUsers = async () => {
+        const { data } = await supabase.from('users').select('id, name, email, role, category').order('name');
+        if (data) setAllUsers(data);
+      };
+      fetchUsers();
+    }
+  }, [isLeader]);
 
   useEffect(() => {
     const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
+      setIsEditing(false);
       try {
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('*')
-          .eq('id', user.id)
+          .eq('id', selectedUserId)
           .single();
           
         if (userError) throw userError;
@@ -22,7 +45,7 @@ function Profile({ user }) {
         const { data: profileData, error: profileError } = await supabase
           .from('employee_profiles')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', selectedUserId)
           .single();
           
         if (profileData) {
@@ -30,6 +53,16 @@ function Profile({ user }) {
         }
         
         setProfileData(combinedData);
+        setEditData({
+          phone: combinedData.phone || '',
+          gender: combinedData.gender || '',
+          college_work: combinedData.college_work || '',
+          year_experience: combinedData.year_experience || '',
+          age: combinedData.age || '',
+          dob: combinedData.dob ? new Date(combinedData.dob).toISOString().split('T')[0] : '',
+          current_city: combinedData.current_city || '',
+          domain: combinedData.domain || ''
+        });
       } catch (err) {
         setError(err.message);
       } finally {
@@ -38,7 +71,43 @@ function Profile({ user }) {
     };
 
     fetchProfile();
-  }, [user.id]);
+  }, [selectedUserId]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = {
+        user_id: selectedUserId,
+        phone: editData.phone,
+        gender: editData.gender,
+        college_work: editData.college_work,
+        year_experience: editData.year_experience,
+        age: editData.age ? parseInt(editData.age) : null,
+        dob: editData.dob || null,
+        current_city: editData.current_city,
+        domain: editData.domain
+      };
+
+      const { error } = await supabase
+        .from('employee_profiles')
+        .upsert(payload, { onConflict: 'user_id' });
+
+      if (error) throw error;
+      
+      // refresh data
+      setProfileData({ ...profileData, ...payload });
+      setIsEditing(false);
+    } catch (err) {
+      alert("Failed to save profile: " + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditData(prev => ({ ...prev, [name]: value }));
+  };
 
   if (loading) {
     return <div className="profile-container"><div className="loading">Loading profile...</div></div>;
@@ -50,6 +119,40 @@ function Profile({ user }) {
 
   return (
     <div className="profile-container">
+      {/* Top Bar */}
+      <div className="profile-topbar">
+        {isLeader ? (
+          <div className="leader-controls">
+            <div className="selector-group">
+              <label>Viewing Profile:</label>
+              <select 
+                value={selectedUserId} 
+                onChange={(e) => setSelectedUserId(parseInt(e.target.value))}
+                className="user-selector"
+              >
+                {allUsers.map(u => (
+                  <option key={u.id} value={u.id}>{u.name || u.email} ({u.role})</option>
+                ))}
+              </select>
+            </div>
+            <div className="action-group">
+              {!isEditing ? (
+                <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit Profile</button>
+              ) : (
+                <div className="edit-actions">
+                  <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+                  <button className="save-btn" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="employee-notice">
+            <span>ℹ️ For any changes contact IT Team</span>
+          </div>
+        )}
+      </div>
+
       <div className="profile-header">
         <div className="profile-avatar-large">
           {(profileData?.name ? profileData.name.charAt(0) : profileData?.email?.charAt(0) || 'U').toUpperCase()}
@@ -65,38 +168,39 @@ function Profile({ user }) {
           <label>Email</label>
           <p>{profileData?.email || 'N/A'}</p>
         </div>
-        <div className="profile-detail-card">
-          <label>Phone No</label>
-          <p>{profileData?.phone || 'N/A'}</p>
-        </div>
-        <div className="profile-detail-card">
-          <label>Gender</label>
-          <p>{profileData?.gender || 'N/A'}</p>
-        </div>
-        <div className="profile-detail-card">
-          <label>College / Work</label>
-          <p>{profileData?.college_work || 'N/A'}</p>
-        </div>
-        <div className="profile-detail-card">
-          <label>Year / Experience</label>
-          <p>{profileData?.year_experience || 'N/A'}</p>
-        </div>
-        <div className="profile-detail-card">
-          <label>Age</label>
-          <p>{profileData?.age || 'N/A'}</p>
-        </div>
-        <div className="profile-detail-card">
-          <label>DOB</label>
-          <p>{profileData?.dob ? new Date(profileData.dob).toLocaleDateString() : 'N/A'}</p>
-        </div>
-        <div className="profile-detail-card">
-          <label>Current City</label>
-          <p>{profileData?.current_city || 'N/A'}</p>
-        </div>
-        <div className="profile-detail-card">
-          <label>Domain</label>
-          <p>{profileData?.domain || 'N/A'}</p>
-        </div>
+
+        {/* Editable Fields */}
+        {[
+          { key: 'phone', label: 'Phone No', type: 'text' },
+          { key: 'gender', label: 'Gender', type: 'text' },
+          { key: 'college_work', label: 'College / Work', type: 'text' },
+          { key: 'year_experience', label: 'Year / Experience', type: 'text' },
+          { key: 'age', label: 'Age', type: 'number' },
+          { key: 'dob', label: 'DOB', type: 'date' },
+          { key: 'current_city', label: 'Current City', type: 'text' },
+          { key: 'domain', label: 'Domain', type: 'text' }
+        ].map(field => (
+          <div className="profile-detail-card" key={field.key}>
+            <label>{field.label}</label>
+            {isEditing ? (
+              <input 
+                type={field.type} 
+                name={field.key} 
+                value={editData[field.key] || ''} 
+                onChange={handleChange}
+                className="edit-input"
+                placeholder={`Enter ${field.label.toLowerCase()}`}
+              />
+            ) : (
+              <p>
+                {field.type === 'date' && profileData?.[field.key] 
+                  ? new Date(profileData[field.key]).toLocaleDateString() 
+                  : profileData?.[field.key] || 'N/A'
+                }
+              </p>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
