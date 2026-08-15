@@ -8,10 +8,16 @@
 .profile-header {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  justify-content: space-between;
   margin-bottom: 3rem;
   padding-bottom: 2rem;
   border-bottom: 1px solid var(--border-color);
+}
+
+.profile-header-info {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 .profile-avatar-large {
@@ -94,47 +100,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Edit Mode & Top Bar Styles */
-.profile-topbar {
-  margin-bottom: 2rem;
-  padding: 1rem 1.5rem;
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--card-shadow);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.leader-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.selector-group {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.selector-group label {
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.user-selector {
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  font-size: 1rem;
-  min-width: 250px;
-}
-
+/* Edit Mode Styles */
 .edit-btn {
   background-color: #3b82f6;
   color: white;

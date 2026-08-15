@@ -107,10 +107,19 @@ function Profile({ user }) {
 
   return (
     <div className="profile-container">
-      {/* Top Bar */}
-      <div className="profile-topbar">
-        {isLeader ? (
-          <div className="leader-controls" style={{ justifyContent: 'flex-end' }}>
+      <div className="profile-header">
+        <div className="profile-header-info">
+          <div className="profile-avatar-large">
+            {(profileData?.name ? profileData.name.charAt(0) : profileData?.email?.charAt(0) || 'U').toUpperCase()}
+          </div>
+          <div className="profile-title">
+            <h2>{profileData?.name || profileData?.email?.split('@')[0]}</h2>
+            <p className="profile-role">{profileData?.role} • {profileData?.category}</p>
+          </div>
+        </div>
+
+        <div className="profile-header-actions">
+          {isLeader ? (
             <div className="action-group">
               {!isEditing ? (
                 <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit Profile</button>
@@ -121,21 +130,11 @@ function Profile({ user }) {
                 </div>
               )}
             </div>
-          </div>
-        ) : (
-          <div className="employee-notice">
-            <span>ℹ️ For any changes contact IT Team</span>
-          </div>
-        )}
-      </div>
-
-      <div className="profile-header">
-        <div className="profile-avatar-large">
-          {(profileData?.name ? profileData.name.charAt(0) : profileData?.email?.charAt(0) || 'U').toUpperCase()}
-        </div>
-        <div className="profile-title">
-          <h2>{profileData?.name || profileData?.email?.split('@')[0]}</h2>
-          <p className="profile-role">{profileData?.role} • {profileData?.category}</p>
+          ) : (
+            <div className="employee-notice" style={{ margin: 0, padding: '0.6rem 1rem' }}>
+              <span>ℹ️ For any changes contact IT Team</span>
+            </div>
+          )}
         </div>
       </div>
       
