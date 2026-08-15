@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 import './Profile.css';
 
 function Profile({ user }) {
@@ -9,12 +10,26 @@ function Profile({ user }) {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/profile/${user.id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile');
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+          
+        if (userError) throw userError;
+
+        let combinedData = { ...userData };
+        const { data: profileData, error: profileError } = await supabase
+          .from('employee_profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+          
+        if (profileData) {
+          combinedData = { ...combinedData, ...profileData };
         }
-        const data = await response.json();
-        setProfileData(data);
+        
+        setProfileData(combinedData);
       } catch (err) {
         setError(err.message);
       } finally {
