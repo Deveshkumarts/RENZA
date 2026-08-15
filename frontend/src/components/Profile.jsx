@@ -5,9 +5,6 @@ import './Profile.css';
 function Profile({ user }) {
   const isLeader = user.role === 'CEO' || user.role === 'COO';
   
-  const [selectedUserId, setSelectedUserId] = useState(user.id);
-  const [allUsers, setAllUsers] = useState([]);
-  
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,19 +12,6 @@ function Profile({ user }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
   const [saving, setSaving] = useState(false);
-  
-  const canEdit = isLeader && selectedUserId === user.id;
-
-  // Fetch all users for dropdown if leader
-  useEffect(() => {
-    if (isLeader) {
-      const fetchUsers = async () => {
-        const { data } = await supabase.from('users').select('id, name, email, role, category').order('name');
-        if (data) setAllUsers(data);
-      };
-      fetchUsers();
-    }
-  }, [isLeader]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -38,7 +22,7 @@ function Profile({ user }) {
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('*')
-          .eq('id', selectedUserId)
+          .eq('id', user.id)
           .single();
           
         if (userError) throw userError;
@@ -47,7 +31,7 @@ function Profile({ user }) {
         const { data: profileData, error: profileError } = await supabase
           .from('employee_profiles')
           .select('*')
-          .eq('user_id', selectedUserId)
+          .eq('user_id', user.id)
           .single();
           
         if (profileData) {
@@ -74,13 +58,13 @@ function Profile({ user }) {
     };
 
     fetchProfile();
-  }, [selectedUserId]);
+  }, [user.id]);
 
   const handleSave = async () => {
     setSaving(true);
     try {
       const payload = {
-        user_id: selectedUserId,
+        user_id: user.id,
         phone: editData.phone,
         gender: editData.gender,
         college_name: editData.college_name,
@@ -126,35 +110,17 @@ function Profile({ user }) {
       {/* Top Bar */}
       <div className="profile-topbar">
         {isLeader ? (
-          <div className="leader-controls">
-            <div className="selector-group">
-              <label>Viewing Profile:</label>
-              <select 
-                value={selectedUserId} 
-                onChange={(e) => setSelectedUserId(parseInt(e.target.value))}
-                className="user-selector"
-              >
-                {allUsers.map(u => (
-                  <option key={u.id} value={u.id}>{u.name || u.email} ({u.role})</option>
-                ))}
-              </select>
+          <div className="leader-controls" style={{ justifyContent: 'flex-end' }}>
+            <div className="action-group">
+              {!isEditing ? (
+                <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit Profile</button>
+              ) : (
+                <div className="edit-actions">
+                  <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+                  <button className="save-btn" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
+                </div>
+              )}
             </div>
-            {canEdit ? (
-              <div className="action-group">
-                {!isEditing ? (
-                  <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit Profile</button>
-                ) : (
-                  <div className="edit-actions">
-                    <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
-                    <button className="save-btn" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="employee-notice" style={{ width: 'auto', marginLeft: 'auto' }}>
-                <span>ℹ️ For any changes contact IT Team</span>
-              </div>
-            )}
           </div>
         ) : (
           <div className="employee-notice">
