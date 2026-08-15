@@ -138,8 +138,8 @@ function Profile({ user }) {
         </div>
       </div>
       
-      <div className="profile-details-grid">
-        <div className="profile-detail-card">
+      <div className="profile-details-list">
+        <div className="profile-detail-row">
           <label>Email</label>
           <p>{profileData?.email || 'N/A'}</p>
         </div>
@@ -156,7 +156,7 @@ function Profile({ user }) {
           { key: 'city', label: 'City', type: 'text' },
           { key: 'domain', label: 'Domain in RENZA', type: 'text' }
         ].map(field => (
-          <div className="profile-detail-card" key={field.key}>
+          <div className="profile-detail-row" key={field.key}>
             <label>{field.label}</label>
             {isEditing ? (
               <input 
