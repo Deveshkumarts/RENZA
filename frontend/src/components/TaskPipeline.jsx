@@ -23,15 +23,14 @@ export default function TaskPipeline({ user }) {
         .select('*');
       if (!usersError) setUsers(usersData || []);
       
-      // Fetch tasks (only those assigned by this leader)
+      // Fetch tasks (assigned by any leader)
       const { data: tasksData, error: tasksError } = await supabase
         .from('assigned_tasks')
         .select(`
           *,
           assigner:users!assigned_tasks_assigner_id_fkey(name, email),
           assignee:users!assigned_tasks_assignee_id_fkey(name, email)
-        `)
-        .eq('assigner_id', user.id);
+        `);
         
       if (!tasksError && tasksData) {
         setTasks(tasksData);

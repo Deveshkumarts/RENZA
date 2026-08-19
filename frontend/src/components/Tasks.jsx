@@ -40,9 +40,7 @@ function Tasks({ user }) {
           )
         `);
         
-      if (isLeader) {
-        query = query.eq('assigner_id', user.id);
-      } else {
+      if (!isLeader) {
         query = query.eq('assignee_id', user.id);
       }
       
