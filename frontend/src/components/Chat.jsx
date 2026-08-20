@@ -67,7 +67,7 @@ export default function Chat({ user }) {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await supabase.from('users').select('id, name, email, category');
+      const { data } = await supabase.from('users').select('id, name, email, category, role');
       if (data) setUsers(data);
     } catch (err) {
       console.error(err);
@@ -432,7 +432,9 @@ export default function Chat({ user }) {
                     required
                   >
                     <option value="">-- Choose User --</option>
-                    {users.filter(u => u.id !== user.id).map(u => (
+                    {users
+                      .filter(u => u.id !== user.id && u.role !== 'CEO' && u.role !== 'COO')
+                      .map(u => (
                       <option key={u.id} value={u.id}>{u.name || u.email}</option>
                     ))}
                   </select>
