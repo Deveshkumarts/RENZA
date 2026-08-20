@@ -6,6 +6,7 @@ import Wiki from './components/Wiki';
 import TaskPipeline from './components/TaskPipeline';
 import CompanyUpdates from './components/CompanyUpdates';
 import Profile from './components/Profile';
+import Chat from './components/Chat';
 import './App.css';
 
 function App() {
@@ -162,6 +163,13 @@ function App() {
             <span className="nav-icon">📢</span>
             Company Updates
           </div>
+          <div 
+            className={`nav-item ${currentView === 'chat' ? 'active' : ''}`}
+            onClick={() => changeView('chat')}
+          >
+            <span className="nav-icon">💬</span>
+            Chat
+          </div>
         </nav>
         
         <div className="sidebar-footer" style={{ padding: '1rem', borderTop: '1px solid var(--border-color)' }}>
@@ -204,6 +212,8 @@ function App() {
           <CompanyUpdates user={user} />
         ) : currentView === 'profile' ? (
           <Profile user={user} />
+        ) : currentView === 'chat' ? (
+          <Chat user={user} />
         ) : (
           <Dashboard user={user} currentView={currentView} />
         )}
