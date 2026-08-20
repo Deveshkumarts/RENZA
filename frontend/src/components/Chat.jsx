@@ -67,7 +67,7 @@ export default function Chat({ user }) {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await supabase.from('users').select('id, name, email');
+      const { data } = await supabase.from('users').select('id, name, email, category');
       if (data) setUsers(data);
     } catch (err) {
       console.error(err);
@@ -455,7 +455,10 @@ export default function Chat({ user }) {
                     <select 
                       className="modern-select" 
                       value={groupCategory} 
-                      onChange={e => setGroupCategory(e.target.value)}
+                      onChange={e => {
+                        setGroupCategory(e.target.value);
+                        setSelectedMembers([]);
+                      }}
                     >
                       <option value="TECH">Tech Group</option>
                       <option value="NON-TECH">Non-Tech Group</option>
@@ -466,7 +469,12 @@ export default function Chat({ user }) {
                   <div className="input-group">
                     <label>Select Members (Optional)</label>
                     <div style={{ maxHeight: '120px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.5rem', backgroundColor: 'var(--input-bg)' }}>
-                      {users.filter(u => u.id !== user.id).map(u => (
+                      {users.filter(u => {
+                        if (u.id === user.id) return false;
+                        if (groupCategory === 'TECH') return u.category === 'TECHNICAL';
+                        if (groupCategory === 'NON-TECH') return u.category === 'NON-TECHNICAL';
+                        return true;
+                      }).map(u => (
                         <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
                           <input 
                             type="checkbox" 
