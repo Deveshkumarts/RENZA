@@ -396,7 +396,8 @@ export default function Chat({ user }) {
                             rel="noopener noreferrer"
                             style={{ color: 'var(--accent-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem' }}
                           >
-                            📎 {msg.attachment_name || 'Attached File'}
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            {msg.attachment_name || 'Attached File'}
                           </a>
                         </div>
                       )}
@@ -416,16 +417,19 @@ export default function Chat({ user }) {
             <div className="chat-input-container" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {attachmentFile && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem', backgroundColor: 'var(--hover-bg)', borderRadius: '6px', fontSize: '0.85rem' }}>
-                  📎 {attachmentFile.name}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                  {attachmentFile.name}
                   <button 
                     onClick={() => setAttachmentFile(null)} 
                     style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginLeft: 'auto' }}
                   >&times;</button>
                 </div>
               )}
-              <form onSubmit={handleSendMessage} className="chat-input-form" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <label style={{ cursor: 'pointer', padding: '0.5rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
-                  📎
+              <form onSubmit={handleSendMessage} className="chat-input-form" style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', alignItems: 'center', width: '100%' }}>
+                <label style={{ cursor: 'pointer', padding: '0.5rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--input-bg)', borderRadius: '8px', border: '1px solid var(--border-color)', height: '42px', width: '42px', transition: 'all 0.2s' }} className="attachment-btn-label">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                  </svg>
                   <input 
                     type="file" 
                     onChange={e => setAttachmentFile(e.target.files[0])} 
@@ -435,6 +439,7 @@ export default function Chat({ user }) {
                 <input
                   type="text"
                   className="chat-input"
+                  style={{ flex: 1, margin: 0, height: '42px' }}
                   placeholder={`Message ${activeChannel.type === 'PRIVATE' ? '@' : '#'}${getChannelName(activeChannel)}...`}
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
@@ -442,6 +447,7 @@ export default function Chat({ user }) {
                 <button 
                   type="submit" 
                   className="chat-send-btn"
+                  style={{ height: '42px', margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   disabled={!newMessage.trim() && !attachmentFile}
                 >
                   Send
