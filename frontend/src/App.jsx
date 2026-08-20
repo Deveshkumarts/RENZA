@@ -191,7 +191,13 @@ function App() {
         </div>
       </aside>
       
-      <main className="main-content" style={{ position: 'relative' }}>
+      <main 
+        className="main-content" 
+        style={{ 
+          position: 'relative',
+          ...(currentView === 'chat' ? { padding: '1.5rem', display: 'flex', flexDirection: 'column', overflow: 'hidden' } : {})
+        }}
+      >
         <button 
           className="desktop-theme-toggle"
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}

@@ -1,11 +1,11 @@
 .chat-container {
   display: flex;
-  height: calc(100vh - 100px); /* Adjust based on your header */
+  flex: 1;
+  min-height: 0; /* Important for flex children to allow shrinking */
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
-  margin: 1rem;
 }
 
 .chat-sidebar {
