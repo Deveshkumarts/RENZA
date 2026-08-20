@@ -435,7 +435,7 @@ export default function Chat({ user }) {
                     {users
                       .filter(u => u.id !== user.id && u.role !== 'CEO' && u.role !== 'COO')
                       .map(u => (
-                      <option key={u.id} value={u.id}>{u.name || u.email}</option>
+                      <option key={u.id} value={u.id}>{u.name || u.email} ({u.category})</option>
                     ))}
                   </select>
                 </div>
@@ -485,7 +485,7 @@ export default function Chat({ user }) {
                             onChange={() => handleMemberToggle(u.id)}
                             style={{ width: 'auto', margin: 0, cursor: 'pointer', transform: 'scale(1.2)' }}
                           />
-                          <label htmlFor={`user-${u.id}`} style={{ margin: 0, display: 'inline', cursor: 'pointer', fontSize: '0.95rem' }}>{u.name || u.email}</label>
+                          <label htmlFor={`user-${u.id}`} style={{ margin: 0, display: 'inline', cursor: 'pointer', fontSize: '0.95rem' }}>{u.name || u.email} ({u.category})</label>
                         </div>
                       ))}
                     </div>
