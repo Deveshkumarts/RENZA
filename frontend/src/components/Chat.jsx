@@ -7,6 +7,7 @@ export default function Chat({ user }) {
   const [activeChannel, setActiveChannel] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [attachmentFile, setAttachmentFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   
@@ -121,26 +122,57 @@ export default function Chat({ user }) {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !activeChannel) return;
+    if ((!newMessage.trim() && !attachmentFile) || !activeChannel) return;
 
+    let attachedUrl = null;
+    let attachedName = null;
     const messageText = newMessage;
+    
+    // Optimistically clear input
     setNewMessage('');
+    const currentFile = attachmentFile;
+    setAttachmentFile(null);
 
     try {
+      // Handle file upload if present
+      if (currentFile) {
+        const fileExt = currentFile.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `chat_attachments/${user.id}/${fileName}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('uploads')
+          .upload(filePath, currentFile);
+          
+        if (uploadError) throw uploadError;
+        
+        const { data: publicUrlData } = supabase.storage
+          .from('uploads')
+          .getPublicUrl(filePath);
+          
+        attachedUrl = publicUrlData.publicUrl;
+        attachedName = currentFile.name;
+      }
+
       const { error } = await supabase
         .from('messages')
         .insert([{
           channel_id: activeChannel.id,
           sender_id: user.id,
-          content: messageText
+          content: messageText || '', // In case content is empty but there's a file
+          attachment_url: attachedUrl,
+          attachment_name: attachedName
         }]);
         
       if (error) {
         console.error('Error sending message:', error);
         setNewMessage(messageText);
+        setAttachmentFile(currentFile);
       }
     } catch (err) {
       console.error('Unexpected error:', err);
+      setNewMessage(messageText);
+      setAttachmentFile(currentFile);
     }
   };
 
@@ -356,6 +388,18 @@ export default function Chat({ user }) {
                     </div>
                     <div className="chat-message-bubble">
                       {msg.content}
+                      {msg.attachment_url && (
+                        <div style={{ marginTop: msg.content ? '0.5rem' : '0', paddingTop: msg.content ? '0.5rem' : '0', borderTop: msg.content ? '1px solid rgba(255,255,255,0.1)' : 'none' }}>
+                          <a 
+                            href={msg.attachment_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{ color: 'var(--accent-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem' }}
+                          >
+                            📎 {msg.attachment_name || 'Attached File'}
+                          </a>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -369,8 +413,25 @@ export default function Chat({ user }) {
               Only the CEO and COO can post in #{activeChannel.name}.
             </div>
           ) : (
-            <div className="chat-input-container">
-              <form onSubmit={handleSendMessage} className="chat-input-form">
+            <div className="chat-input-container" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {attachmentFile && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem', backgroundColor: 'var(--hover-bg)', borderRadius: '6px', fontSize: '0.85rem' }}>
+                  📎 {attachmentFile.name}
+                  <button 
+                    onClick={() => setAttachmentFile(null)} 
+                    style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginLeft: 'auto' }}
+                  >&times;</button>
+                </div>
+              )}
+              <form onSubmit={handleSendMessage} className="chat-input-form" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <label style={{ cursor: 'pointer', padding: '0.5rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+                  📎
+                  <input 
+                    type="file" 
+                    onChange={e => setAttachmentFile(e.target.files[0])} 
+                    style={{ display: 'none' }}
+                  />
+                </label>
                 <input
                   type="text"
                   className="chat-input"
@@ -381,7 +442,7 @@ export default function Chat({ user }) {
                 <button 
                   type="submit" 
                   className="chat-send-btn"
-                  disabled={!newMessage.trim()}
+                  disabled={!newMessage.trim() && !attachmentFile}
                 >
                   Send
                 </button>
