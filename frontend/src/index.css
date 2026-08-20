@@ -389,6 +389,11 @@ input:focus, textarea:focus, .modern-select:focus {
   cursor: pointer;
 }
 
+.modern-select option {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
 input::placeholder, textarea::placeholder {
   color: var(--text-muted);
 }
