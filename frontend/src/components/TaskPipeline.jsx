@@ -137,12 +137,12 @@ export default function TaskPipeline({ user }) {
                   
                   <p style={{ margin: '0 0 1rem 0', fontSize: '0.95rem', lineHeight: '1.4' }}>{task.description}</p>
                   
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)' }}>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                      Assignee: {task.assignee?.name || task.assignee?.email}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: 'auto', paddingTop: '0.8rem', borderTop: '1px solid var(--border-color)' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      Assignee: <strong style={{color: 'var(--text-color)'}}>{task.assignee?.name || task.assignee?.email}</strong>
                     </span>
                     
-                    <span className={`task-status-badge ${task.status}`} style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}>
+                    <span className={`task-status-badge ${task.status}`} style={{ fontSize: '0.75rem', padding: '0.4rem 0.8rem', alignSelf: 'flex-start' }}>
                       {task.status.replace('_', ' ').toUpperCase()}
                     </span>
                   </div>
