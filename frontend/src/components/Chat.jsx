@@ -223,24 +223,30 @@ export default function Chat({ user }) {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="chat-input-container">
-            <form onSubmit={handleSendMessage} className="chat-input-form">
-              <input
-                type="text"
-                className="chat-input"
-                placeholder={`Message #${activeChannel.name}...`}
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-              />
-              <button 
-                type="submit" 
-                className="chat-send-btn"
-                disabled={!newMessage.trim()}
-              >
-                Send
-              </button>
-            </form>
-          </div>
+          {activeChannel.name === 'Announcements' && user?.role !== 'CEO' && user?.role !== 'COO' ? (
+            <div className="chat-input-container" style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '1.5rem' }}>
+              Only the CEO and COO can post in #{activeChannel.name}.
+            </div>
+          ) : (
+            <div className="chat-input-container">
+              <form onSubmit={handleSendMessage} className="chat-input-form">
+                <input
+                  type="text"
+                  className="chat-input"
+                  placeholder={`Message #${activeChannel.name}...`}
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                />
+                <button 
+                  type="submit" 
+                  className="chat-send-btn"
+                  disabled={!newMessage.trim()}
+                >
+                  Send
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       ) : (
         <div className="no-channel-selected">
