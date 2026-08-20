@@ -339,6 +339,83 @@ app.get('/api/export/updates', async (req, res) => {
   }
 });
 
+// Chat Webhook Endpoint for Email Notifications
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: process.env.SMTP_PORT || 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
+app.post('/api/chat/webhook', async (req, res) => {
+  try {
+    // The webhook payload from Supabase
+    const payload = req.body;
+    
+    // We only care about new messages
+    if (payload.type !== 'INSERT' || !payload.record) {
+      return res.status(200).send('Ignored');
+    }
+
+    const { channel_id, sender_id, content } = payload.record;
+
+    // Fetch the channel info
+    const channelQuery = await db.query('SELECT name, type FROM channels WHERE id = $1', [channel_id]);
+    const channel = channelQuery.rows[0];
+
+    // Fetch sender info
+    const senderQuery = await db.query('SELECT name, email FROM users WHERE id = $1', [sender_id]);
+    const sender = senderQuery.rows[0];
+
+    if (!channel || !sender) return res.status(404).json({ error: 'Data not found' });
+
+    let recipients = [];
+
+    if (channel.type === 'COMPANY') {
+      // For company channels, send to everyone except sender
+      const usersQuery = await db.query('SELECT email FROM users WHERE id != $1', [sender_id]);
+      recipients = usersQuery.rows.map(u => u.email);
+    } else {
+      // For private/group channels, send to members except sender
+      const membersQuery = await db.query(`
+        SELECT u.email 
+        FROM channel_members cm
+        JOIN users u ON cm.user_id = u.id
+        WHERE cm.channel_id = $1 AND cm.user_id != $2
+      `, [channel_id, sender_id]);
+      recipients = membersQuery.rows.map(u => u.email);
+    }
+
+    if (recipients.length === 0) return res.status(200).send('No recipients');
+
+    // Make sure SMTP is configured before sending
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.warn('SMTP credentials missing. Would have sent email to:', recipients.length, 'users');
+      return res.status(200).json({ success: true, simulated: true });
+    }
+
+    const mailOptions = {
+      from: `"Renza Notifications" <${process.env.SMTP_USER}>`,
+      bcc: recipients.join(','),
+      subject: `New message in #${channel.name}`,
+      text: `${sender.name || sender.email} posted in #${channel.name}:\n\n"${content}"\n\nOpen Renza to reply.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`Sent email notification for channel ${channel.name} to ${recipients.length} users.`);
+
+    res.status(200).json({ success: true, count: recipients.length });
+  } catch (err) {
+    console.error('Webhook error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
