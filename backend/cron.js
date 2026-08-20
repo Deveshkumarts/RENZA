@@ -58,4 +58,20 @@ cron.schedule('0 17 * * 1-5', async () => {
   }
 });
 
-console.log('Cron jobs loaded: Daily update reminders scheduled for 5:00 PM Mon-Fri.');
+// Run every day at 3:00 AM to automatically clean up completed tasks
+cron.schedule('0 3 * * *', async () => {
+  console.log('Running nightly cleanup of completed tasks...');
+  try {
+    const result = await db.query(`
+      DELETE FROM assigned_tasks 
+      WHERE status = 'completed'
+    `);
+    console.log(`Cleaned up ${result.rowCount} completed task(s).`);
+  } catch (error) {
+    console.error('Error cleaning up completed tasks:', error);
+  }
+});
+
+console.log('Cron jobs loaded:');
+console.log('- Daily update reminders (5:00 PM Mon-Fri)');
+console.log('- Completed tasks cleanup (3:00 AM Daily)');
