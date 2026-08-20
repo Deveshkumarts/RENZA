@@ -416,6 +416,9 @@ app.post('/api/chat/webhook', async (req, res) => {
   }
 });
 
+// Initialize Cron Jobs
+require('./cron');
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
