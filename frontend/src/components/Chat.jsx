@@ -475,14 +475,15 @@ export default function Chat({ user }) {
                         if (groupCategory === 'NON-TECH') return u.category === 'NON-TECHNICAL';
                         return true;
                       }).map(u => (
-                        <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                        <div key={u.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '0.8rem', padding: '0.4rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }}>
                           <input 
                             type="checkbox" 
                             id={`user-${u.id}`}
                             checked={selectedMembers.includes(u.id)}
                             onChange={() => handleMemberToggle(u.id)}
+                            style={{ width: 'auto', margin: 0, cursor: 'pointer', transform: 'scale(1.2)' }}
                           />
-                          <label htmlFor={`user-${u.id}`} style={{ margin: 0 }}>{u.name || u.email}</label>
+                          <label htmlFor={`user-${u.id}`} style={{ margin: 0, display: 'inline', cursor: 'pointer', fontSize: '0.95rem' }}>{u.name || u.email}</label>
                         </div>
                       ))}
                     </div>
