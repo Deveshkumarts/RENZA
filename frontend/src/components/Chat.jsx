@@ -247,11 +247,9 @@ export default function Chat({ user }) {
       <div className="chat-sidebar">
         <div className="chat-sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3>Chat</h3>
-          {isLeader && (
-            <button className="create-chat-btn" onClick={() => setShowModal(true)} title="New Chat">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            </button>
-          )}
+          <button className="create-chat-btn" onClick={() => setShowModal(true)} title="New Chat">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
         </div>
         
         <div className="chat-sidebar-content">
@@ -413,12 +411,14 @@ export default function Chat({ user }) {
               >
                 Direct Message
               </button>
-              <button 
-                className={`chat-modal-tab ${modalTab === 'GROUP' ? 'active' : ''}`}
-                onClick={() => setModalTab('GROUP')}
-              >
-                Create Group
-              </button>
+              {isLeader && (
+                <button 
+                  className={`chat-modal-tab ${modalTab === 'GROUP' ? 'active' : ''}`}
+                  onClick={() => setModalTab('GROUP')}
+                >
+                  Create Group
+                </button>
+              )}
             </div>
 
             <form onSubmit={handleCreateChat} className="chat-modal-body">
