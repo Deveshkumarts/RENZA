@@ -10,6 +10,14 @@ export default function TaskPipeline({ user }) {
   // Filters
   const [selectedAssigneeId, setSelectedAssigneeId] = useState(null);
   const [priorityFilter, setPriorityFilter] = useState('ALL');
+  const [expandedTasks, setExpandedTasks] = useState({});
+
+  const toggleTask = (taskId) => {
+    setExpandedTasks(prev => ({
+      ...prev,
+      [taskId]: !prev[taskId]
+    }));
+  };
 
   useEffect(() => {
     fetchData();
@@ -173,6 +181,7 @@ export default function TaskPipeline({ user }) {
                     flexDirection: 'column',
                     cursor: 'pointer'
                   }}
+                  onClick={() => toggleTask(task.id)}
                   onMouseOver={(e) => { 
                     e.currentTarget.style.transform = 'translateY(-3px)'; 
                     e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.2)';
@@ -183,7 +192,7 @@ export default function TaskPipeline({ user }) {
                     e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
                     e.currentTarget.style.borderColor = 'var(--border-color)';
                   }}
-                  title={task.description}
+                  title={!expandedTasks[task.id] ? "Click to view details" : ""}
                 >
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -204,6 +213,32 @@ export default function TaskPipeline({ user }) {
                       )}
                     </div>
                   </div>
+
+                  {expandedTasks[task.id] && (
+                    <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                      <div style={{ fontSize: '0.9rem', color: 'var(--text-color)', whiteSpace: 'pre-wrap' }}>
+                        {task.description}
+                      </div>
+                      
+                      {task.attachment_url && (
+                        <div>
+                          <a 
+                            href={task.attachment_url} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ color: 'var(--accent-color)', fontSize: '0.85rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                          >
+                            📎 View Attachment
+                          </a>
+                        </div>
+                      )}
+                      
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                        Assigned by: {task.assigner?.name || task.assigner?.email}
+                      </div>
+                    </div>
+                  )}
                   
                 </div>
               ))}
