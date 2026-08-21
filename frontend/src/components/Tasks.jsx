@@ -364,7 +364,7 @@ function Tasks({ user }) {
                     </span>
                   </h3>
                   
-                  <div className="assigned-task-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                  <div className="assigned-task-list" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     {groupTasks.map(task => {
                       const isExpanded = expandedTasks[task.id];
                       return (
