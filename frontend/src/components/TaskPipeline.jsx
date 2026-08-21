@@ -8,7 +8,7 @@ export default function TaskPipeline({ user }) {
   const [loading, setLoading] = useState(true);
   
   // Filters
-  const [assigneeFilter, setAssigneeFilter] = useState('ALL');
+  const [selectedAssigneeId, setSelectedAssigneeId] = useState(null);
   const [priorityFilter, setPriorityFilter] = useState('ALL');
 
   useEffect(() => {
@@ -17,13 +17,11 @@ export default function TaskPipeline({ user }) {
 
   const fetchData = async () => {
     try {
-      // Fetch users for the assignee dropdown
       const { data: usersData, error: usersError } = await supabase
         .from('users')
         .select('*');
       if (!usersError) setUsers(usersData || []);
       
-      // Fetch tasks (assigned by any leader)
       const { data: tasksData, error: tasksError } = await supabase
         .from('assigned_tasks')
         .select(`
@@ -42,28 +40,39 @@ export default function TaskPipeline({ user }) {
     }
   };
 
-  const handleStatusChange = async (taskId, newStatus) => {
-    try {
-      const { error } = await supabase
-        .from('assigned_tasks')
-        .update({ status: newStatus })
-        .eq('id', taskId);
-        
-      if (!error) {
-        setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+  const employeeStats = useMemo(() => {
+    const stats = {};
+    users.filter(u => u.role !== 'CEO' && u.role !== 'COO').forEach(u => {
+      stats[u.id] = {
+        id: u.id,
+        name: u.name || u.email,
+        category: u.category || 'MEMBER',
+        pending: 0,
+        in_progress: 0,
+        blocked: 0,
+        completed: 0,
+        total: 0
+      };
+    });
+
+    tasks.forEach(task => {
+      const empId = task.assignee_id;
+      if (stats[empId]) {
+        stats[empId][task.status]++;
+        stats[empId].total++;
       }
-    } catch (err) {
-      console.error('Error updating task status:', err);
-    }
-  };
+    });
+
+    return Object.values(stats);
+  }, [users, tasks]);
 
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
-      const matchAssignee = assigneeFilter === 'ALL' || String(task.assignee_id) === String(assigneeFilter);
+      const matchAssignee = selectedAssigneeId === null || String(task.assignee_id) === String(selectedAssigneeId);
       const matchPriority = priorityFilter === 'ALL' || task.priority === priorityFilter;
       return matchAssignee && matchPriority;
     });
-  }, [tasks, assigneeFilter, priorityFilter]);
+  }, [tasks, selectedAssigneeId, priorityFilter]);
 
   const columns = [
     { id: 'pending', title: 'Pending' },
@@ -79,41 +88,78 @@ export default function TaskPipeline({ user }) {
   return (
     <div className="task-pipeline-container animate-fade-in">
       
-      {/* Metric Boxes */}
       <SankeyChart tasks={tasks} />
 
-      {/* Deep-Dive Filters */}
-      <div className="card pipeline-filters">
-        <div className="input-group">
-          <label style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>Filter by Assignee</label>
-          <select className="modern-select" value={assigneeFilter} onChange={(e) => setAssigneeFilter(e.target.value)}>
-            <option value="ALL">All Assignees</option>
-            {users
-              .filter(u => u.role !== 'CEO' && u.role !== 'COO')
-              .map(u => (
-              <option key={u.id} value={u.id}>
-                {u.name || u.email} {u.category ? `- ${u.category}` : ''}
-              </option>
-            ))}
-          </select>
+      {selectedAssigneeId === null ? (
+        <div className="employee-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
+          {employeeStats.map(emp => (
+            <div 
+              key={emp.id} 
+              className="card" 
+              style={{ cursor: 'pointer', transition: 'all 0.2s ease', padding: '1.5rem', border: '1px solid var(--border-color)' }}
+              onClick={() => setSelectedAssigneeId(emp.id)}
+              onMouseOver={(e) => { 
+                e.currentTarget.style.transform = 'translateY(-2px)'; 
+                e.currentTarget.style.borderColor = 'var(--accent-color)';
+              }}
+              onMouseOut={(e) => { 
+                e.currentTarget.style.transform = 'translateY(0)'; 
+                e.currentTarget.style.borderColor = 'var(--border-color)';
+              }}
+            >
+              <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-color)' }}>{emp.name}</h3>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                {emp.category}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Pending:</span> <strong>{emp.pending}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>In Progress:</span> <strong>{emp.in_progress}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Blocked:</span> <strong>{emp.blocked}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Completed:</span> <strong>{emp.completed}</strong>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-        
-        <div className="input-group">
-          <label style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>Filter by Priority</label>
-          <select className="modern-select" value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
-            <option value="ALL">All Priorities</option>
-            <option value="High">High Priority</option>
-            <option value="Medium">Medium Priority</option>
-            <option value="Low">Low Priority</option>
-          </select>
-        </div>
-        
-        <div className="pipeline-filters-count">
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Showing {filteredTasks.length} task(s)
-          </span>
-        </div>
-      </div>
+      ) : (
+        <>
+          <div style={{ margin: '2rem 0 1rem 0', display: 'flex', alignItems: 'center' }}>
+            <button 
+              onClick={() => setSelectedAssigneeId(null)}
+              className="btn secondary"
+              style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              ← Back to All Employees
+            </button>
+            <h2 style={{ marginLeft: '1rem', marginBottom: '0' }}>
+              {users.find(u => u.id === selectedAssigneeId)?.name || 'Employee'}'s Tasks
+            </h2>
+          </div>
+
+          <div className="card pipeline-filters">
+            <div className="input-group">
+              <label style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>Filter by Priority</label>
+              <select className="modern-select" value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
+                <option value="ALL">All Priorities</option>
+                <option value="High">High Priority</option>
+                <option value="Medium">Medium Priority</option>
+                <option value="Low">Low Priority</option>
+              </select>
+            </div>
+            
+            <div className="pipeline-filters-count">
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                Showing {filteredTasks.length} task(s)
+              </span>
+            </div>
+          </div>
 
       {/* Kanban Board */}
       <div className="kanban-board">
@@ -187,6 +233,8 @@ export default function TaskPipeline({ user }) {
           </div>
         ))}
       </div>
+      </>
+      )}
     </div>
   );
 }
