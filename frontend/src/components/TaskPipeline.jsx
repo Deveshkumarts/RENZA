@@ -143,23 +143,7 @@ export default function TaskPipeline({ user }) {
             </h2>
           </div>
 
-          <div className="card pipeline-filters">
-            <div className="input-group">
-              <label style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600 }}>Filter by Priority</label>
-              <select className="modern-select" value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
-                <option value="ALL">All Priorities</option>
-                <option value="High">High Priority</option>
-                <option value="Medium">Medium Priority</option>
-                <option value="Low">Low Priority</option>
-              </select>
-            </div>
-            
-            <div className="pipeline-filters-count">
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                Showing {filteredTasks.length} task(s)
-              </span>
-            </div>
-          </div>
+
 
       {/* Kanban Board */}
       <div className="kanban-board">
