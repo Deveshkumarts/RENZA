@@ -21,7 +21,6 @@ function Dashboard({ user, currentView }) {
   const isLeader = user.role === 'CEO' || user.role === 'COO';
 
   const employeeStats = React.useMemo(() => {
-    if (!isLeader) return {};
     return updates.reduce((acc, update) => {
       if (!acc[update.user_id]) {
         acc[update.user_id] = {
@@ -38,7 +37,7 @@ function Dashboard({ user, currentView }) {
       }
       return acc;
     }, {});
-  }, [updates, isLeader]);
+  }, [updates]);
 
   const fetchUpdates = async () => {
     try {
@@ -331,7 +330,7 @@ function Dashboard({ user, currentView }) {
         <div className="updates-container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              {isLeader && selectedEmployeeId && (
+              {selectedEmployeeId && (
                 <button 
                   onClick={() => setSelectedEmployeeId(null)}
                   className="btn-small secondary"
@@ -341,7 +340,7 @@ function Dashboard({ user, currentView }) {
                 </button>
               )}
               <h2 className="dashboard-title" style={{ margin: 0 }}>
-                {isLeader && selectedEmployeeId 
+                {selectedEmployeeId 
                   ? `${employeeStats[selectedEmployeeId]?.name}'s Updates`
                   : 'Recent Updates'}
               </h2>
@@ -353,7 +352,7 @@ function Dashboard({ user, currentView }) {
             )}
           </div>
 
-          {isLeader && selectedEmployeeId === null ? (
+          {selectedEmployeeId === null ? (
             <div className="employee-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem' }}>
               {Object.values(employeeStats).map(emp => (
                 <div 
@@ -388,7 +387,7 @@ function Dashboard({ user, currentView }) {
             <p>No updates found.</p>
           ) : (
             updates
-              .filter(update => !isLeader || update.user_id === selectedEmployeeId)
+              .filter(update => update.user_id === selectedEmployeeId)
               .map(update => (
               <div key={update.id} className="card update-card">
                 <div className="card-header">
