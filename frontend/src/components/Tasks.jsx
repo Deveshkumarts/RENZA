@@ -409,7 +409,7 @@ function Tasks({ user }) {
                               )}
                             </div>
                             
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '1rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '1rem', width: '100%', gap: '1rem' }}>
                               <button 
                                 onClick={() => toggleTask(task.id)}
                                 className="btn-small secondary"
