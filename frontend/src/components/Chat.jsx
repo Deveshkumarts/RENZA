@@ -18,6 +18,9 @@ export default function Chat({ user }) {
   const [groupName, setGroupName] = useState('');
   const [groupCategory, setGroupCategory] = useState('TECH');
   const [selectedMembers, setSelectedMembers] = useState([]);
+  
+  const [hoveredMessage, setHoveredMessage] = useState(null);
+  const [starredMessages, setStarredMessages] = useState([]);
 
   const messagesEndRef = useRef(null);
   const isLeader = user?.role === 'CEO' || user?.role === 'COO';
@@ -26,7 +29,19 @@ export default function Chat({ user }) {
   useEffect(() => {
     fetchUsers();
     fetchChannels();
+    fetchStarredMessages();
   }, []);
+  
+  const fetchStarredMessages = async () => {
+    try {
+      const { data, error } = await supabase.from('starred_messages').select('message_id').eq('user_id', user.id);
+      if (data && !error) {
+        setStarredMessages(data.map(d => d.message_id));
+      }
+    } catch (e) {
+      // Table might not exist yet, safe to ignore
+    }
+  };
 
   // Fetch messages when active channel changes
   useEffect(() => {
@@ -261,6 +276,58 @@ export default function Chat({ user }) {
     }
   };
 
+  const handleCopyMessage = (content) => {
+    navigator.clipboard.writeText(content).catch(err => console.error("Copy failed", err));
+  };
+
+  const handleDeleteMessage = async (msgId) => {
+    if (!window.confirm("Delete this message?")) return;
+    try {
+      const { error } = await supabase.from('messages').delete().eq('id', msgId);
+      if (error) throw error;
+      setMessages(prev => prev.filter(m => m.id !== msgId));
+    } catch (err) {
+      console.error('Error deleting message:', err);
+    }
+  };
+
+  const handlePinMessage = async (msgId, currentPinned) => {
+    try {
+      const { error } = await supabase.from('messages').update({ is_pinned: !currentPinned }).eq('id', msgId);
+      if (error) {
+        if (error.code === '42703') { // column does not exist
+          alert("Pin functionality requires a database update. Please run chat_options_setup.sql in your Supabase SQL editor.");
+        } else {
+          console.error(error);
+        }
+      } else {
+        setMessages(prev => prev.map(m => m.id === msgId ? { ...m, is_pinned: !currentPinned } : m));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleStarMessage = async (msgId, isStarred) => {
+    try {
+      if (isStarred) {
+        const { error } = await supabase.from('starred_messages').delete().eq('user_id', user.id).eq('message_id', msgId);
+        if (error) throw error;
+        setStarredMessages(prev => prev.filter(id => id !== msgId));
+      } else {
+        const { error } = await supabase.from('starred_messages').insert({ user_id: user.id, message_id: msgId });
+        if (error) throw error;
+        setStarredMessages(prev => [...prev, msgId]);
+      }
+    } catch (err) {
+      if (err.code === '42P01') { // relation does not exist
+        alert("Star functionality requires a database update. Please run chat_options_setup.sql in your Supabase SQL editor.");
+      } else {
+        console.error(err);
+      }
+    }
+  };
+
   // Group channels by type and category
   const companyChannels = channels.filter(c => c.type === 'COMPANY');
   const techGroups = channels.filter(c => c.type === 'GROUP' && c.sub_category === 'TECH');
@@ -381,24 +448,57 @@ export default function Chat({ user }) {
             ) : (
               messages.map(msg => {
                 const isSelf = msg.sender_id === user.id;
+                const isStarred = starredMessages.includes(msg.id);
+                
                 return (
-                  <div key={msg.id} className={`chat-message ${isSelf ? 'self' : ''}`}>
-                    <div className="chat-message-sender">
+                  <div 
+                    key={msg.id} 
+                    className={`chat-message ${isSelf ? 'self' : ''}`}
+                    onMouseEnter={() => setHoveredMessage(msg.id)}
+                    onMouseLeave={() => setHoveredMessage(null)}
+                  >
+                    <div className="chat-message-sender" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: isSelf ? 'flex-end' : 'flex-start' }}>
                       {isSelf ? 'You' : (msg.sender?.name || msg.sender?.email || 'Unknown')}
+                      {msg.is_pinned && <span title="Pinned to channel" style={{ fontSize: '0.8rem' }}>📌</span>}
+                      {isStarred && <span title="Starred by you" style={{ fontSize: '0.8rem', color: '#ffcc00' }}>⭐</span>}
                     </div>
-                    <div className="chat-message-bubble">
-                      {msg.content}
-                      {msg.attachment_url && (
-                        <div style={{ marginTop: msg.content ? '0.5rem' : '0', paddingTop: msg.content ? '0.5rem' : '0', borderTop: msg.content ? (isSelf ? '1px solid rgba(0,0,0,0.1)' : '1px solid rgba(255,255,255,0.1)') : 'none' }}>
-                          <a 
-                            href={msg.attachment_url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            style={{ color: isSelf ? 'var(--accent-text)' : 'var(--accent-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem', fontWeight: 600 }}
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                            {msg.attachment_name || 'Attached File'}
-                          </a>
+                    
+                    <div className="chat-message-bubble-wrapper" style={{ position: 'relative', display: 'flex', flexDirection: isSelf ? 'row-reverse' : 'row', alignItems: 'center', gap: '0.5rem' }}>
+                      <div className="chat-message-bubble">
+                        {msg.content}
+                        {msg.attachment_url && (
+                          <div style={{ marginTop: msg.content ? '0.5rem' : '0', paddingTop: msg.content ? '0.5rem' : '0', borderTop: msg.content ? (isSelf ? '1px solid rgba(0,0,0,0.1)' : '1px solid rgba(255,255,255,0.1)') : 'none' }}>
+                            <a 
+                              href={msg.attachment_url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              style={{ color: isSelf ? 'var(--accent-text)' : 'var(--accent-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem', fontWeight: 600 }}
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                              {msg.attachment_name || 'Attached File'}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {hoveredMessage === msg.id && (
+                        <div className="message-options-menu" style={{ display: 'flex', gap: '0.3rem', backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.2rem', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}>
+                          <button onClick={() => handleCopyMessage(msg.content)} title="Copy message" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', color: 'var(--text-color)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                          </button>
+                          <button onClick={() => handleStarMessage(msg.id, isStarred)} title={isStarred ? "Unstar message" : "Star message"} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', color: isStarred ? '#ffcc00' : 'var(--text-color)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill={isStarred ? "#ffcc00" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                          </button>
+                          {(isLeader || activeChannel.type === 'GROUP' || activeChannel.type === 'PRIVATE') && (
+                            <button onClick={() => handlePinMessage(msg.id, msg.is_pinned)} title={msg.is_pinned ? "Unpin message" : "Pin message"} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', color: msg.is_pinned ? '#ffcc00' : 'var(--text-color)' }}>
+                              <span style={{ fontSize: '1rem', lineHeight: '16px' }}>📌</span>
+                            </button>
+                          )}
+                          {(isSelf || isLeader) && (
+                            <button onClick={() => handleDeleteMessage(msg.id)} title="Delete message" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', color: '#ff4d4f' }}>
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
