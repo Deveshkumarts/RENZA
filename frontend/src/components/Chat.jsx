@@ -442,6 +442,58 @@ export default function Chat({ user }) {
             </button>
             <h3>{activeChannel.type === 'PRIVATE' ? '@' : '#'} {getChannelName(activeChannel)}</h3>
           </div>
+          {/* Pinned Messages Banner */}
+          {messages.filter(msg => msg.is_pinned).length > 0 && (
+            <div className="pinned-messages-banner" style={{ 
+              backgroundColor: 'var(--input-bg)', 
+              borderBottom: '1px solid var(--border-color)', 
+              padding: '0.8rem 1.2rem', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '0.4rem',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
+              zIndex: 10
+            }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--accent-color)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+                Pinned Message{messages.filter(msg => msg.is_pinned).length > 1 ? 's' : ''}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '100px', overflowY: 'auto' }}>
+                {messages.filter(msg => msg.is_pinned).map(msg => (
+                  <div 
+                    key={msg.id} 
+                    style={{ 
+                      fontSize: '0.9rem', 
+                      color: 'var(--text-color)', 
+                      whiteSpace: 'nowrap', 
+                      overflow: 'hidden', 
+                      textOverflow: 'ellipsis', 
+                      cursor: 'pointer',
+                      padding: '0.3rem',
+                      borderRadius: '4px',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={e => e.currentTarget.style.backgroundColor = 'var(--hover-bg)'}
+                    onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                    onClick={() => {
+                      const el = document.getElementById(`msg-${msg.id}`);
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Add temporary highlight effect
+                        el.style.transition = 'background-color 0.5s';
+                        el.style.backgroundColor = 'rgba(255, 204, 0, 0.2)';
+                        setTimeout(() => el.style.backgroundColor = 'transparent', 2000);
+                      }
+                    }}
+                    title="Click to jump to message"
+                  >
+                    <span style={{ color: 'var(--text-muted)', fontWeight: 500, marginRight: '0.3rem' }}>{msg.sender_id === user.id ? 'You' : msg.sender?.name || msg.sender?.email}:</span> 
+                    {msg.content || (msg.attachment_url ? '📎 Attachment' : 'Pinned message')}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           
           <div className="chat-messages">
             {messages.length === 0 ? (
@@ -456,6 +508,7 @@ export default function Chat({ user }) {
                 return (
                   <div 
                     key={msg.id} 
+                    id={`msg-${msg.id}`}
                     className={`chat-message ${isSelf ? 'self' : ''}`}
                     onMouseEnter={() => setHoveredMessage(msg.id)}
                     onMouseLeave={() => setHoveredMessage(null)}
