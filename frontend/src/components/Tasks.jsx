@@ -15,6 +15,9 @@ function Tasks({ user }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [commentTexts, setCommentTexts] = useState({});
   const [selectedFilterAssigneeId, setSelectedFilterAssigneeId] = useState(null);
+  const [expandedTasks, setExpandedTasks] = useState({});
+  
+  const toggleTask = (id) => setExpandedTasks(prev => ({ ...prev, [id]: !prev[id] }));
   
   const isLeader = user.role === 'CEO' || user.role === 'COO';
 
@@ -335,97 +338,141 @@ function Tasks({ user }) {
         ) : tasks.length === 0 ? (
           <p>No tasks found.</p>
         ) : (
-          <div className="assigned-task-list">
-            {tasks
-              .filter(task => !isLeader || task.assignee_id === selectedFilterAssigneeId)
-              .map(task => (
-              <div key={task.id} className={`assigned-task-item ${task.status === 'completed' ? 'completed' : ''} priority-${task.priority.toLowerCase()}`}>
-                <div className="task-header">
-                  {isLeader ? (
-                    <span className="task-assignee">Assigned to: <strong>{task.assignee?.name || task.assignee?.email}</strong></span>
-                  ) : (
-                    <span className="task-assigner">Assigned by: <strong>{task.assigner?.name || task.assigner?.email}</strong></span>
-                  )}
-                  
-                  <div className="task-meta">
-                    <span className={`priority-badge ${task.priority.toLowerCase()}`}>{task.priority} Priority</span>
-                    {task.due_date && <span className="due-date-badge">Due: {new Date(task.due_date).toLocaleDateString()}</span>}
-                    <span className="task-date">{new Date(task.created_at).toLocaleString()}</span>
-                    {isLeader && (
-                      <button 
-                        onClick={() => handleDeleteTask(task.id)}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ff4d4f', fontSize: '1.2rem', padding: '0 0.5rem', marginLeft: '0.5rem' }}
-                        title="Delete task"
-                      >
-                        🗑️
-                      </button>
-                    )}
-                  </div>
-                </div>
+          <div className="tasks-board">
+            {['pending', 'in_progress', 'blocked', 'completed'].map(statusGroup => {
+              const groupTasks = tasks
+                .filter(task => !isLeader || task.assignee_id === selectedFilterAssigneeId)
+                .filter(task => task.status === statusGroup);
                 
-                <div className="task-body">
-                  <div className="task-content-wrapper">
-                    <div className="task-desc">{task.description}</div>
-                    
-                    {task.attachment_url && (
-                      <div className="task-attachment">
-                        <a href={task.attachment_url} target="_blank" rel="noreferrer" className="attachment-link">
-                          📎 View Attachment
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {(!isLeader || user.id === task.assignee_id) ? (
-                    <div className="task-status-selector">
-                      <select 
-                        value={task.status} 
-                        onChange={(e) => handleStatusChange(task.id, e.target.value)}
-                        className={`status-select ${task.status}`}
-                        style={{ padding: '0.4rem 0.8rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'var(--text-color)', fontWeight: 'bold' }}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="blocked">Blocked</option>
-                        <option value="completed">Completed</option>
-                      </select>
-                    </div>
-                  ) : (
-                    <span className={`task-status-badge ${task.status}`}>
-                      {task.status.replace('_', ' ').toUpperCase()}
+              if (groupTasks.length === 0) return null;
+              
+              return (
+                <div key={statusGroup} className="task-status-group" style={{ marginBottom: '2.5rem' }}>
+                  <h3 style={{ 
+                    textTransform: 'capitalize', 
+                    paddingBottom: '0.8rem', 
+                    borderBottom: '2px solid var(--border-color)', 
+                    marginBottom: '1.5rem',
+                    color: 'var(--text-color)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.8rem'
+                  }}>
+                    {statusGroup.replace('_', ' ')}
+                    <span style={{ fontSize: '0.8rem', backgroundColor: 'var(--input-bg)', padding: '0.2rem 0.6rem', borderRadius: '12px', color: 'var(--text-secondary)' }}>
+                      {groupTasks.length}
                     </span>
-                  )}
-                </div>
-
-                {/* Task Clarification Threads */}
-                <div className="task-comments-section">
-                  {task.task_comments && task.task_comments.length > 0 && (
-                    <div className="task-comments-list">
-                      {task.task_comments.sort((a,b) => new Date(a.created_at) - new Date(b.created_at)).map(comment => (
-                        <div key={comment.id} className="task-comment">
-                          <div className="comment-header">
-                            <strong>{comment.author?.name || comment.author?.email}</strong>
-                            <span className="comment-role">{comment.author?.role}</span>
-                            <span className="comment-time">{new Date(comment.created_at).toLocaleString([], {hour: '2-digit', minute:'2-digit', month:'short', day:'numeric'})}</span>
+                  </h3>
+                  
+                  <div className="assigned-task-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                    {groupTasks.map(task => {
+                      const isExpanded = expandedTasks[task.id];
+                      return (
+                        <div key={task.id} className={`assigned-task-item ${task.status === 'completed' ? 'completed' : ''} priority-${task.priority.toLowerCase()}`} style={{ padding: '1.2rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                          
+                          <div className="task-header" style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border-color)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.8rem' }}>
+                              {isLeader ? (
+                                <span className="task-assignee" style={{ fontSize: '0.85rem' }}>Assignee:<br/><strong style={{ color: 'var(--text-color)' }}>{task.assignee?.name || task.assignee?.email}</strong></span>
+                              ) : (
+                                <span className="task-assigner" style={{ fontSize: '0.85rem' }}>Assigned by:<br/><strong style={{ color: 'var(--text-color)' }}>{task.assigner?.name || task.assigner?.email}</strong></span>
+                              )}
+                              {isLeader && (
+                                <button 
+                                  onClick={() => handleDeleteTask(task.id)}
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ff4d4f', fontSize: '1.2rem', padding: '0', lineHeight: 1 }}
+                                  title="Delete task"
+                                >
+                                  🗑️
+                                </button>
+                              )}
+                            </div>
+                            
+                            <div className="task-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                              <span className={`priority-badge ${task.priority.toLowerCase()}`} style={{ fontSize: '0.7rem' }}>{task.priority.toUpperCase()}</span>
+                              {task.due_date && <span className="due-date-badge" style={{ fontSize: '0.75rem', fontWeight: 600 }}>Due: {new Date(task.due_date).toLocaleDateString(undefined, {month:'short', day:'numeric'})}</span>}
+                            </div>
                           </div>
-                          <div className="comment-body">{comment.comment}</div>
+                          
+                          <div className="task-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+                            <div className="task-content-wrapper" style={{ width: '100%' }}>
+                              <div className="task-desc" style={!isExpanded ? { display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.95rem', color: 'var(--text-color)' } : { fontSize: '0.95rem', color: 'var(--text-color)' }}>
+                                {task.description}
+                              </div>
+                              
+                              {task.attachment_url && isExpanded && (
+                                <div className="task-attachment" style={{ marginTop: '1rem' }}>
+                                  <a href={task.attachment_url} target="_blank" rel="noreferrer" className="attachment-link">
+                                    📎 View Attachment
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '1rem' }}>
+                              <button 
+                                onClick={() => toggleTask(task.id)}
+                                className="btn-small secondary"
+                                style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', borderRadius: '4px' }}
+                              >
+                                {isExpanded ? 'Show Less' : 'View Details'}
+                              </button>
+
+                              {(!isLeader || user.id === task.assignee_id) ? (
+                                <div className="task-status-selector">
+                                  <select 
+                                    value={task.status} 
+                                    onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                                    className={`status-select ${task.status}`}
+                                    style={{ padding: '0.3rem 0.6rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'var(--text-color)', fontWeight: 'bold', fontSize: '0.8rem' }}
+                                  >
+                                    <option value="pending">Pending</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="blocked">Blocked</option>
+                                    <option value="completed">Completed</option>
+                                  </select>
+                                </div>
+                              ) : null}
+                            </div>
+                          </div>
+
+                          {isExpanded && (
+                            <div className="task-comments-section" style={{ marginTop: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+                              {task.task_comments && task.task_comments.length > 0 && (
+                                <div className="task-comments-list" style={{ maxHeight: '200px', overflowY: 'auto', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                  {task.task_comments.sort((a,b) => new Date(a.created_at) - new Date(b.created_at)).map(comment => (
+                                    <div key={comment.id} className="task-comment" style={{ padding: '0.75rem', backgroundColor: 'var(--input-bg)', borderRadius: '8px' }}>
+                                      <div className="comment-header" style={{ marginBottom: '0.4rem', fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between' }}>
+                                        <strong>{comment.author?.name || comment.author?.email}</strong>
+                                        <span className="comment-time" style={{ color: 'var(--text-secondary)' }}>
+                                          {new Date(comment.created_at).toLocaleString([], {month:'short', day:'numeric', hour: '2-digit', minute:'2-digit'})}
+                                        </span>
+                                      </div>
+                                      <div className="comment-body" style={{ fontSize: '0.9rem', color: 'var(--text-color)' }}>{comment.comment}</div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              <div className="task-comment-input-wrapper" style={{ display: 'flex', gap: '0.5rem' }}>
+                                <input 
+                                  type="text" 
+                                  placeholder="Add a comment..." 
+                                  value={commentTexts[task.id] || ''}
+                                  onChange={(e) => setCommentTexts(prev => ({...prev, [task.id]: e.target.value}))}
+                                  onKeyDown={(e) => e.key === 'Enter' && handlePostComment(task.id)}
+                                  style={{ flex: 1, padding: '0.5rem 0.8rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-color)', color: 'var(--text-color)', fontSize: '0.85rem' }}
+                                />
+                                <button onClick={() => handlePostComment(task.id)} className="btn-small" style={{ padding: '0.5rem 1rem', borderRadius: '4px', fontWeight: 600 }}>Post</button>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                  <div className="task-comment-input-wrapper">
-                    <input 
-                      type="text" 
-                      placeholder="Ask a question or add a comment..." 
-                      value={commentTexts[task.id] || ''}
-                      onChange={(e) => setCommentTexts(prev => ({...prev, [task.id]: e.target.value}))}
-                      onKeyDown={(e) => e.key === 'Enter' && handlePostComment(task.id)}
-                    />
-                    <button onClick={() => handlePostComment(task.id)}>Post</button>
+                      );
+                    })}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
