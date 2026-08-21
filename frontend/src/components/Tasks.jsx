@@ -14,8 +14,38 @@ function Tasks({ user }) {
   const [file, setFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [commentTexts, setCommentTexts] = useState({});
+  const [selectedFilterAssigneeId, setSelectedFilterAssigneeId] = useState(null);
   
   const isLeader = user.role === 'CEO' || user.role === 'COO';
+
+  const assigneeStats = React.useMemo(() => {
+    if (!isLeader) return {};
+    return tasks.reduce((acc, task) => {
+      const uId = task.assignee_id;
+      if (!acc[uId]) {
+        acc[uId] = {
+          id: uId,
+          name: task.assignee?.name || task.assignee?.email,
+          taskCount: 0,
+          pendingCount: 0,
+          completedCount: 0,
+          inProgressCount: 0,
+          blockedCount: 0,
+          latestTask: task.created_at
+        };
+      }
+      acc[uId].taskCount += 1;
+      if (task.status === 'pending') acc[uId].pendingCount += 1;
+      else if (task.status === 'in_progress') acc[uId].inProgressCount += 1;
+      else if (task.status === 'blocked') acc[uId].blockedCount += 1;
+      else if (task.status === 'completed') acc[uId].completedCount += 1;
+
+      if (new Date(task.created_at) > new Date(acc[uId].latestTask)) {
+        acc[uId].latestTask = task.created_at;
+      }
+      return acc;
+    }, {});
+  }, [tasks, isLeader]);
 
   const fetchData = async () => {
     try {
@@ -249,13 +279,66 @@ function Tasks({ user }) {
       )}
       
       <div className="card" style={{ marginTop: '2rem' }}>
-        <h2 className="dashboard-title">{isLeader ? 'All Assigned Tasks' : 'My Tasks'}</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {isLeader && selectedFilterAssigneeId && (
+              <button 
+                onClick={() => setSelectedFilterAssigneeId(null)}
+                className="btn-small secondary"
+                style={{ padding: '0.25rem 0.75rem', borderRadius: '4px' }}
+              >
+                ← Back
+              </button>
+            )}
+            <h2 className="dashboard-title" style={{ margin: 0 }}>
+              {isLeader 
+                ? (selectedFilterAssigneeId ? `${assigneeStats[selectedFilterAssigneeId]?.name}'s Tasks` : 'All Assigned Tasks')
+                : 'My Tasks'}
+            </h2>
+          </div>
+        </div>
         
-        {tasks.length === 0 ? (
+        {isLeader && selectedFilterAssigneeId === null ? (
+          <div className="employee-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem' }}>
+            {Object.values(assigneeStats).map(emp => (
+              <div 
+                key={emp.id} 
+                className="card" 
+                style={{ cursor: 'pointer', transition: 'all 0.2s ease', padding: '1.5rem', border: '1px solid var(--border-color)' }}
+                onClick={() => setSelectedFilterAssigneeId(emp.id)}
+                onMouseOver={(e) => { 
+                  e.currentTarget.style.transform = 'translateY(-2px)'; 
+                  e.currentTarget.style.borderColor = 'var(--accent-color)';
+                }}
+                onMouseOut={(e) => { 
+                  e.currentTarget.style.transform = 'translateY(0)'; 
+                  e.currentTarget.style.borderColor = 'var(--border-color)';
+                }}
+              >
+                <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-color)' }}>{emp.name}</h3>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                  {emp.pendingCount > 0 && <span className="task-status-badge pending" style={{ fontSize: '0.7rem' }}>{emp.pendingCount} Pending</span>}
+                  {emp.inProgressCount > 0 && <span className="task-status-badge in_progress" style={{ fontSize: '0.7rem' }}>{emp.inProgressCount} In Progress</span>}
+                  {emp.blockedCount > 0 && <span className="task-status-badge blocked" style={{ fontSize: '0.7rem' }}>{emp.blockedCount} Blocked</span>}
+                  {emp.completedCount > 0 && <span className="task-status-badge completed" style={{ fontSize: '0.7rem' }}>{emp.completedCount} Completed</span>}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <span>Total: {emp.taskCount}</span>
+                  <span>Latest: {new Date(emp.latestTask).toLocaleDateString()}</span>
+                </div>
+              </div>
+            ))}
+            {Object.values(assigneeStats).length === 0 && (
+              <p>No tasks have been assigned yet.</p>
+            )}
+          </div>
+        ) : tasks.length === 0 ? (
           <p>No tasks found.</p>
         ) : (
           <div className="assigned-task-list">
-            {tasks.map(task => (
+            {tasks
+              .filter(task => !isLeader || task.assignee_id === selectedFilterAssigneeId)
+              .map(task => (
               <div key={task.id} className={`assigned-task-item ${task.status === 'completed' ? 'completed' : ''} priority-${task.priority.toLowerCase()}`}>
                 <div className="task-header">
                   {isLeader ? (
