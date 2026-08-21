@@ -276,3 +276,35 @@
   background-color: var(--hover-bg);
   color: var(--text-color);
 }.message-options-menu button:hover { background-color: var(--hover-bg); border-radius: 4px; }
+
+.mobile-back-btn {
+  display: none;
+}
+@media (max-width: 768px) {
+  .chat-container.has-active-channel .chat-sidebar {
+    display: none;
+  }
+  .chat-container:not(.has-active-channel) .chat-main,
+  .chat-container:not(.has-active-channel) .chat-placeholder {
+    display: none;
+  }
+  .chat-sidebar {
+    width: 100%;
+    border-right: none;
+  }
+  .chat-header {
+    padding: 0.8rem;
+  }
+  .mobile-back-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.8rem;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 0.3rem;
+  }
+}
+

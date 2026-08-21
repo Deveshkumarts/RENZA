@@ -340,7 +340,7 @@ export default function Chat({ user }) {
   }
 
   return (
-    <div className="chat-container animate-fade-in" style={{ position: 'relative' }}>
+    <div className={`chat-container animate-fade-in ${activeChannel ? 'has-active-channel' : ''}`} style={{ position: 'relative' }}>
       
       {/* Sidebar */}
       <div className="chat-sidebar">
@@ -437,6 +437,9 @@ export default function Chat({ user }) {
       {activeChannel ? (
         <div className="chat-main">
           <div className="chat-header">
+            <button className="mobile-back-btn" onClick={() => setActiveChannel(null)} title="Back to Channels">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
             <h3>{activeChannel.type === 'PRIVATE' ? '@' : '#'} {getChannelName(activeChannel)}</h3>
           </div>
           
