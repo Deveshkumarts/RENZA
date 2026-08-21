@@ -16,8 +16,29 @@ function Dashboard({ user, currentView }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   
   const isLeader = user.role === 'CEO' || user.role === 'COO';
+
+  const employeeStats = React.useMemo(() => {
+    if (!isLeader) return {};
+    return updates.reduce((acc, update) => {
+      if (!acc[update.user_id]) {
+        acc[update.user_id] = {
+          id: update.user_id,
+          name: update.user?.name || update.user?.email,
+          category: update.user?.category || 'MEMBER',
+          updateCount: 0,
+          latestUpdate: update.created_at
+        };
+      }
+      acc[update.user_id].updateCount += 1;
+      if (new Date(update.created_at) > new Date(acc[update.user_id].latestUpdate)) {
+        acc[update.user_id].latestUpdate = update.created_at;
+      }
+      return acc;
+    }, {});
+  }, [updates, isLeader]);
 
   const fetchUpdates = async () => {
     try {
@@ -309,17 +330,66 @@ function Dashboard({ user, currentView }) {
       {currentView === 'view' && (
         <div className="updates-container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 className="dashboard-title" style={{ margin: 0 }}>Recent Updates</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              {isLeader && selectedEmployeeId && (
+                <button 
+                  onClick={() => setSelectedEmployeeId(null)}
+                  className="btn-small secondary"
+                  style={{ padding: '0.25rem 0.75rem', borderRadius: '4px' }}
+                >
+                  ← Back
+                </button>
+              )}
+              <h2 className="dashboard-title" style={{ margin: 0 }}>
+                {isLeader && selectedEmployeeId 
+                  ? `${employeeStats[selectedEmployeeId]?.name}'s Updates`
+                  : 'Recent Updates'}
+              </h2>
+            </div>
             {isLeader && (
               <button onClick={exportCSV} className="btn-small">
                 📥 Export CSV
               </button>
             )}
           </div>
-          {updates.length === 0 ? (
+
+          {isLeader && selectedEmployeeId === null ? (
+            <div className="employee-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem' }}>
+              {Object.values(employeeStats).map(emp => (
+                <div 
+                  key={emp.id} 
+                  className="card" 
+                  style={{ cursor: 'pointer', transition: 'all 0.2s ease', padding: '1.5rem', border: '1px solid var(--border-color)' }}
+                  onClick={() => setSelectedEmployeeId(emp.id)}
+                  onMouseOver={(e) => { 
+                    e.currentTarget.style.transform = 'translateY(-2px)'; 
+                    e.currentTarget.style.borderColor = 'var(--accent-color)';
+                  }}
+                  onMouseOut={(e) => { 
+                    e.currentTarget.style.transform = 'translateY(0)'; 
+                    e.currentTarget.style.borderColor = 'var(--border-color)';
+                  }}
+                >
+                  <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-color)' }}>{emp.name}</h3>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                    {emp.category}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    <span>{emp.updateCount} update{emp.updateCount !== 1 ? 's' : ''}</span>
+                    <span>Last: {new Date(emp.latestUpdate).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              ))}
+              {Object.values(employeeStats).length === 0 && (
+                <p>No updates found from any employees.</p>
+              )}
+            </div>
+          ) : updates.length === 0 ? (
             <p>No updates found.</p>
           ) : (
-            updates.map(update => (
+            updates
+              .filter(update => !isLeader || update.user_id === selectedEmployeeId)
+              .map(update => (
               <div key={update.id} className="card update-card">
                 <div className="card-header">
                   <span><strong>{update.user?.name || update.user?.email}</strong> ({update.category || 'MEMBER'})</span>
