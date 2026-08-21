@@ -128,23 +128,66 @@ export default function TaskPipeline({ user }) {
             
             <div className="kanban-cards" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minHeight: '100px' }}>
               {filteredTasks.filter(t => t.status === col.id).map(task => (
-                <div key={task.id} className="kanban-card" style={{ backgroundColor: 'var(--bg-color)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)', position: 'relative' }}>
+                <div 
+                  key={task.id} 
+                  className="kanban-card" 
+                  style={{ 
+                    backgroundColor: 'var(--bg-color)', 
+                    padding: '1.2rem', 
+                    borderRadius: '10px', 
+                    border: '1px solid var(--border-color)', 
+                    position: 'relative',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    cursor: 'pointer'
+                  }}
+                  onMouseOver={(e) => { 
+                    e.currentTarget.style.transform = 'translateY(-3px)'; 
+                    e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.2)';
+                    e.currentTarget.style.borderColor = 'var(--accent-color)';
+                  }}
+                  onMouseOut={(e) => { 
+                    e.currentTarget.style.transform = 'translateY(0)'; 
+                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                    e.currentTarget.style.borderColor = 'var(--border-color)';
+                  }}
+                  title={task.description}
+                >
                   
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <span className={`priority-badge ${task.priority.toLowerCase()}`} style={{ fontSize: '0.75rem' }}>{task.priority}</span>
-                    {task.due_date && <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Due: {new Date(task.due_date).toLocaleDateString()}</span>}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem', alignItems: 'center' }}>
+                    <span className={`priority-badge ${task.priority.toLowerCase()}`} style={{ fontSize: '0.7rem', padding: '0.2rem 0.6rem', letterSpacing: '0.5px' }}>
+                      {task.priority.toUpperCase()}
+                    </span>
+                    {task.due_date && (
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                        Due: {new Date(task.due_date).toLocaleDateString(undefined, {month:'short', day:'numeric'})}
+                      </span>
+                    )}
                   </div>
                   
-                  <p style={{ margin: '0 0 1rem 0', fontSize: '0.95rem', lineHeight: '1.4' }}>{task.description}</p>
+                  <p style={{ 
+                    margin: '0 0 1rem 0', 
+                    fontSize: '0.95rem', 
+                    lineHeight: '1.5',
+                    color: 'var(--text-color)',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 4,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
+                    {task.description}
+                  </p>
                   
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '0.8rem', borderTop: '1px solid var(--border-color)', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                      Assignee: <br/><strong style={{color: 'var(--text-color)'}}>{task.assignee?.name || task.assignee?.email}</strong>
-                    </span>
-                    
-                    <span className={`task-status-badge ${task.status}`} style={{ fontSize: '0.75rem', padding: '0.4rem 0.8rem', whiteSpace: 'nowrap' }}>
-                      {task.status.replace('_', ' ').toUpperCase()}
-                    </span>
+                  <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>Assignee</span>
+                      <strong style={{color: 'var(--text-color)', fontSize: '0.9rem'}}>
+                        {task.assignee?.name || task.assignee?.email}
+                      </strong>
+                    </div>
                   </div>
                   
                 </div>
