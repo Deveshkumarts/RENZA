@@ -50,12 +50,14 @@ function Dashboard({ user, currentView }) {
         `)
         .order('created_at', { ascending: false });
         
-      if (!isLeader) {
-        query = query.eq('category', user.category);
-      }
       const { data, error } = await query;
       if (error) throw error;
-      setUpdates(data || []);
+      
+      let filteredData = data || [];
+      if (!isLeader) {
+        filteredData = filteredData.filter(update => update.user?.category === user.category);
+      }
+      setUpdates(filteredData);
     } catch (err) {
       console.error('Error fetching updates:', err);
     } finally {
