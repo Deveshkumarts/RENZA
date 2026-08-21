@@ -389,12 +389,12 @@ export default function Chat({ user }) {
                     <div className="chat-message-bubble">
                       {msg.content}
                       {msg.attachment_url && (
-                        <div style={{ marginTop: msg.content ? '0.5rem' : '0', paddingTop: msg.content ? '0.5rem' : '0', borderTop: msg.content ? '1px solid rgba(255,255,255,0.1)' : 'none' }}>
+                        <div style={{ marginTop: msg.content ? '0.5rem' : '0', paddingTop: msg.content ? '0.5rem' : '0', borderTop: msg.content ? (isSelf ? '1px solid rgba(0,0,0,0.1)' : '1px solid rgba(255,255,255,0.1)') : 'none' }}>
                           <a 
                             href={msg.attachment_url} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            style={{ color: 'var(--accent-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem' }}
+                            style={{ color: isSelf ? 'var(--accent-text)' : 'var(--accent-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem', fontWeight: 600 }}
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                             {msg.attachment_name || 'Attached File'}
