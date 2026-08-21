@@ -156,37 +156,22 @@ export default function TaskPipeline({ user }) {
                   title={task.description}
                 >
                   
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem', alignItems: 'center' }}>
-                    <span className={`priority-badge ${task.priority.toLowerCase()}`} style={{ fontSize: '0.7rem', padding: '0.2rem 0.6rem', letterSpacing: '0.5px' }}>
-                      {task.priority.toUpperCase()}
-                    </span>
-                    {task.due_date && (
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-                        Due: {new Date(task.due_date).toLocaleDateString(undefined, {month:'short', day:'numeric'})}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <strong style={{ color: 'var(--text-color)', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {task.assignee?.name || task.assignee?.email}
+                    </strong>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className={`priority-badge ${task.priority.toLowerCase()}`} style={{ fontSize: '0.65rem', padding: '0.2rem 0.5rem', letterSpacing: '0.5px' }}>
+                        {task.priority.toUpperCase()}
                       </span>
-                    )}
-                  </div>
-                  
-                  <p style={{ 
-                    margin: '0 0 1rem 0', 
-                    fontSize: '0.95rem', 
-                    lineHeight: '1.5',
-                    color: 'var(--text-color)',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 4,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}>
-                    {task.description}
-                  </p>
-                  
-                  <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                      <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>Assignee</span>
-                      <strong style={{color: 'var(--text-color)', fontSize: '0.9rem'}}>
-                        {task.assignee?.name || task.assignee?.email}
-                      </strong>
+                      {task.due_date ? (
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                          Due: {new Date(task.due_date).toLocaleDateString(undefined, {month:'short', day:'numeric'})}
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.75rem', color: 'transparent' }}>-</span>
+                      )}
                     </div>
                   </div>
                   

@@ -1099,7 +1099,7 @@ button.add-task-trigger-btn:hover:not(:disabled) {
 
 .kanban-column {
   flex: 1;
-  min-width: 300px;
+  min-width: 220px;
   background-color: var(--card-bg);
   border-radius: 12px;
   padding: 1rem;
