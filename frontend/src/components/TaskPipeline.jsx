@@ -10,14 +10,7 @@ export default function TaskPipeline({ user }) {
   // Filters
   const [selectedAssigneeId, setSelectedAssigneeId] = useState(null);
   const [priorityFilter, setPriorityFilter] = useState('ALL');
-  const [expandedTasks, setExpandedTasks] = useState({});
-
-  const toggleTask = (taskId) => {
-    setExpandedTasks(prev => ({
-      ...prev,
-      [taskId]: !prev[taskId]
-    }));
-  };
+  const [selectedTask, setSelectedTask] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -181,7 +174,7 @@ export default function TaskPipeline({ user }) {
                     flexDirection: 'column',
                     cursor: 'pointer'
                   }}
-                  onClick={() => toggleTask(task.id)}
+                  onClick={() => setSelectedTask(task)}
                   onMouseOver={(e) => { 
                     e.currentTarget.style.transform = 'translateY(-3px)'; 
                     e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.2)';
@@ -192,7 +185,7 @@ export default function TaskPipeline({ user }) {
                     e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
                     e.currentTarget.style.borderColor = 'var(--border-color)';
                   }}
-                  title={!expandedTasks[task.id] ? "Click to view details" : ""}
+                  title="Click to view details"
                 >
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -213,33 +206,6 @@ export default function TaskPipeline({ user }) {
                       )}
                     </div>
                   </div>
-
-                  {expandedTasks[task.id] && (
-                    <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                      <div style={{ fontSize: '0.9rem', color: 'var(--text-color)', whiteSpace: 'pre-wrap' }}>
-                        {task.description}
-                      </div>
-                      
-                      {task.attachment_url && (
-                        <div>
-                          <a 
-                            href={task.attachment_url} 
-                            target="_blank" 
-                            rel="noreferrer" 
-                            onClick={(e) => e.stopPropagation()}
-                            style={{ color: 'var(--accent-color)', fontSize: '0.85rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
-                          >
-                            📎 View Attachment
-                          </a>
-                        </div>
-                      )}
-                      
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                        Assigned by: {task.assigner?.name || task.assigner?.email}
-                      </div>
-                    </div>
-                  )}
-                  
                 </div>
               ))}
               
@@ -254,6 +220,56 @@ export default function TaskPipeline({ user }) {
       </div>
       </>
       )}
+
+      {selectedTask && (
+        <div className="modal-overlay" onClick={() => setSelectedTask(null)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="modal-content animate-fade-in" onClick={e => e.stopPropagation()} style={{ backgroundColor: 'var(--card-bg)', padding: '2.5rem', borderRadius: '12px', width: '90%', maxWidth: '600px', border: '1px solid var(--border-color)', position: 'relative', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', maxHeight: '90vh', overflowY: 'auto' }}>
+            <button onClick={() => setSelectedTask(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.5rem', cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#ff4d4f'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>&times;</button>
+            <h2 style={{ marginTop: 0, color: 'var(--text-color)', marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border-color)' }}>Task Details</h2>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+              <div>
+                <strong style={{ color: 'var(--text-secondary)', display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem' }}>Assignee</strong> 
+                <span style={{ color: 'var(--text-color)', fontSize: '1.05rem' }}>{selectedTask.assignee?.name || selectedTask.assignee?.email}</span>
+              </div>
+              <div>
+                <strong style={{ color: 'var(--text-secondary)', display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem' }}>Status</strong> 
+                <span style={{ color: 'var(--text-color)', fontSize: '1.05rem', textTransform: 'capitalize' }}>{selectedTask.status.replace('_', ' ')}</span>
+              </div>
+              <div>
+                <strong style={{ color: 'var(--text-secondary)', display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem' }}>Priority</strong> 
+                <span className={`priority-badge ${selectedTask.priority.toLowerCase()}`}>{selectedTask.priority.toUpperCase()}</span>
+              </div>
+              <div>
+                <strong style={{ color: 'var(--text-secondary)', display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem' }}>Due Date</strong> 
+                <span style={{ color: 'var(--text-color)', fontSize: '1.05rem' }}>{selectedTask.due_date ? new Date(selectedTask.due_date).toLocaleDateString(undefined, {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'}) : 'Not set'}</span>
+              </div>
+            </div>
+            
+            <div style={{ marginBottom: '2rem' }}>
+              <strong style={{ color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Description</strong>
+              <div style={{ backgroundColor: 'var(--input-bg)', padding: '1.5rem', borderRadius: '8px', whiteSpace: 'pre-wrap', color: 'var(--text-color)', lineHeight: '1.6', fontSize: '1rem', border: '1px solid var(--border-color)' }}>
+                {selectedTask.description}
+              </div>
+            </div>
+            
+            {selectedTask.attachment_url && (
+              <div style={{ marginBottom: '2rem' }}>
+                <a href={selectedTask.attachment_url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-color)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 1.2rem', backgroundColor: 'var(--input-bg)', borderRadius: '8px', border: '1px solid var(--border-color)', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.borderColor = 'var(--accent-color)'} onMouseOut={e => e.currentTarget.style.borderColor = 'var(--border-color)'}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                  View Attachment
+                </a>
+              </div>
+            )}
+            
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', borderTop: '1px solid var(--border-color)', paddingTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              Assigned by {selectedTask.assigner?.name || selectedTask.assigner?.email}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
