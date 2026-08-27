@@ -481,7 +481,7 @@ export default function Chat({ user }) {
                         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         // Add temporary highlight effect
                         el.style.transition = 'background-color 0.5s';
-                        el.style.backgroundColor = 'rgba(255, 204, 0, 0.2)';
+                        el.style.backgroundColor = 'rgba(0, 210, 196, 0.2)';
                         setTimeout(() => el.style.backgroundColor = 'transparent', 2000);
                       }
                     }}
@@ -516,7 +516,7 @@ export default function Chat({ user }) {
                     <div className="chat-message-sender" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: isSelf ? 'flex-end' : 'flex-start' }}>
                       {isSelf ? 'You' : (msg.sender?.name || msg.sender?.email || 'Unknown')}
                       {msg.is_pinned && <span title="Pinned to channel" style={{ fontSize: '0.8rem' }}>📌</span>}
-                      {isStarred && <span title="Starred by you" style={{ fontSize: '0.8rem', color: '#ffcc00' }}>⭐</span>}
+                      {isStarred && <span title="Starred by you" style={{ fontSize: '0.8rem', color: '#00d2c4' }}>⭐</span>}
                     </div>
                     
                     <div className="chat-message-bubble-wrapper" style={{ position: 'relative', display: 'flex', flexDirection: isSelf ? 'row-reverse' : 'row', alignItems: 'center', gap: '0.5rem' }}>
@@ -542,11 +542,11 @@ export default function Chat({ user }) {
                           <button onClick={() => handleCopyMessage(msg.content)} title="Copy message" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', color: 'var(--text-color)' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                           </button>
-                          <button onClick={() => handleStarMessage(msg.id, isStarred)} title={isStarred ? "Unstar message" : "Star message"} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', color: isStarred ? '#ffcc00' : 'var(--text-color)' }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill={isStarred ? "#ffcc00" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                          <button onClick={() => handleStarMessage(msg.id, isStarred)} title={isStarred ? "Unstar message" : "Star message"} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', color: isStarred ? '#00d2c4' : 'var(--text-color)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill={isStarred ? "#00d2c4" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                           </button>
                           {(isLeader || activeChannel.type === 'GROUP' || activeChannel.type === 'PRIVATE') && (
-                            <button onClick={() => handlePinMessage(msg.id, msg.is_pinned)} title={msg.is_pinned ? "Unpin message" : "Pin message"} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', color: msg.is_pinned ? '#ffcc00' : 'var(--text-color)' }}>
+                            <button onClick={() => handlePinMessage(msg.id, msg.is_pinned)} title={msg.is_pinned ? "Unpin message" : "Pin message"} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', color: msg.is_pinned ? '#00d2c4' : 'var(--text-color)' }}>
                               <span style={{ fontSize: '1rem', lineHeight: '16px' }}>📌</span>
                             </button>
                           )}

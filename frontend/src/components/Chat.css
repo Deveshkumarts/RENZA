@@ -63,9 +63,9 @@
 }
 
 .chat-channel-item.active {
-  background-color: rgba(255, 204, 0, 0.1);
-  color: #d4a000;
-  border-right: 3px solid #ffcc00;
+  background-color: rgba(0, 210, 196, 0.1);
+  color: #00bdae;
+  border-right: 3px solid #00d2c4;
 }
 
 .chat-main {

@@ -29,9 +29,9 @@ body.dark-theme {
   --border-color: #2a2a2a;
   --input-bg: #1a1a1a;
   --hover-bg: #222222;
-  --accent-color: #ffcc00;
+  --accent-color: #00d2c4;
   --accent-text: #000000;
-  --accent-hover: #e6b800;
+  --accent-hover: #00bdb0;
   --card-bg: #161616;
   --text-secondary: #a1a1aa;
   --box-bg: rgba(22, 22, 22, 0.8);
@@ -196,9 +196,9 @@ p { margin: 0; line-height: 1.5; }
 }
 
 .nav-item.active {
-  background-color: rgba(255, 204, 0, 0.05);
-  color: #ffcc00;
-  border: 1px solid rgba(255, 204, 0, 0.2);
+  background-color: rgba(0, 210, 196, 0.05);
+  color: #00d2c4;
+  border: 1px solid rgba(0, 210, 196, 0.2);
 }
 
 .sidebar-footer {
@@ -222,7 +222,7 @@ p { margin: 0; line-height: 1.5; }
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: #ffcc00;
+  background-color: #00d2c4;
   color: #000;
   display: flex;
   align-items: center;
@@ -468,7 +468,7 @@ textarea {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: radial-gradient(circle at center, rgba(255, 234, 0, 0.03) 0%, transparent 60%);
+  background: radial-gradient(circle at center, rgba(0, 210, 196, 0.03) 0%, transparent 60%);
   pointer-events: none;
   z-index: 0;
 }
@@ -984,9 +984,9 @@ button.add-task-trigger-btn:hover:not(:disabled) {
 
 .radio-label:has(input:checked) {
   background-color: #000000;
-  color: #ffcc00;
-  border-color: #ffcc00;
-  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.15);
+  color: #00d2c4;
+  border-color: #00d2c4;
+  box-shadow: 0 4px 12px rgba(0, 210, 196, 0.15);
 }
 
 .radio-label input[type="radio"] {
@@ -1384,8 +1384,8 @@ button.add-task-trigger-btn:hover:not(:disabled) {
 
 .comment-role {
   font-size: 0.7rem;
-  background: rgba(255, 204, 0, 0.1);
-  color: #d4a000;
+  background: rgba(0, 210, 196, 0.1);
+  color: #00bdae;
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
   text-transform: uppercase;
@@ -1421,7 +1421,7 @@ button.add-task-trigger-btn:hover:not(:disabled) {
 
 .task-comment-input-wrapper input:focus {
   outline: none;
-  border-color: #ffcc00;
+  border-color: #00d2c4;
 }
 
 .task-comment-input-wrapper button {
