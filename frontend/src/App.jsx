@@ -175,7 +175,7 @@ function App() {
         <div className="sidebar-footer" style={{ padding: '1rem', borderTop: '1px solid var(--border-color)' }}>
           <div className="user-profile-widget" onClick={() => changeView('profile')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '0.5rem' }}>
             <div className="user-info" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflow: 'hidden', flex: 1 }}>
-              <div className="user-avatar" style={{ backgroundColor: '#ffc107', color: '#000', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: 'bold', flexShrink: 0, fontSize: '1.2rem' }}>
+              <div className="user-avatar" style={{ backgroundColor: '#00d2c4', color: '#000', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: 'bold', flexShrink: 0, fontSize: '1.2rem' }}>
                 {(user.name ? user.name.charAt(0) : user.email.charAt(0)).toUpperCase()}
               </div>
               <div className="user-details" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
