@@ -83,7 +83,7 @@ export default function CompanyUpdates({ user }) {
   }
 
   return (
-    <div className="updates-container animate-fade-in" style={{ padding: '1rem', maxWidth: '900px', margin: '0 auto' }}>
+    <div className="updates-container animate-fade-in" style={{ padding: '1rem' }}>
       
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
         <h2 className="dashboard-title" style={{ margin: 0 }}>Company Updates</h2>
