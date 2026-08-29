@@ -280,15 +280,6 @@ function App() {
         </button>
       </div>
 
-      {/* Fixed Open Button when sidebar is closed (desktop) */}
-      {!isSidebarOpen && window.innerWidth > 768 && (
-        <button className="toggle-sidebar-btn fixed-open-btn" onClick={() => setIsSidebarOpen(true)} title="Open sidebar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="9" y1="3" x2="9" y2="21"></line>
-          </svg>
-        </button>
-      )}
 
       {/* ===== SIDEBAR ===== */}
       <aside className={`sidebar ${isSidebarOpen ? 'mobile-open' : 'collapsed'}`}>
@@ -431,8 +422,33 @@ function App() {
       <div className="app-right-shell">
         {/* Top Header Bar */}
         <header className="top-header">
-          <div className="top-header-greeting">
-            {getGreeting()}, <span>{firstName}</span> 👋
+          <div className="top-header-greeting" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {!isSidebarOpen && window.innerWidth > 768 && (
+              <button 
+                className="toggle-sidebar-btn" 
+                onClick={() => setIsSidebarOpen(true)} 
+                title="Open sidebar"
+                style={{ 
+                  background: 'var(--card-bg)', 
+                  border: '1px solid var(--border-color)', 
+                  color: 'var(--text-muted)', 
+                  borderRadius: '8px',
+                  padding: '0.4rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="9" y1="3" x2="9" y2="21"></line>
+                </svg>
+              </button>
+            )}
+            <div>
+              {getGreeting()}, <span>{firstName}</span> 👋
+            </div>
           </div>
           <div className="top-header-actions">
             {/* Bell icon with Notification Dropdown */}
