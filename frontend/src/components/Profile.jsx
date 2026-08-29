@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import './Profile.css';
 
-function Profile({ user }) {
+function Profile({ user, onBack }) {
   const isLeader = user.role === 'CEO' || user.role === 'COO';
   
   const [profileData, setProfileData] = useState(null);
@@ -107,6 +107,42 @@ function Profile({ user }) {
 
   return (
     <div className="profile-container">
+      {/* Back Button */}
+      {onBack && (
+        <div style={{ marginBottom: '2.5rem', marginLeft: '-1rem', marginTop: '-0.5rem' }}>
+          <button
+            onClick={onBack}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              background: 'transparent',
+              border: '1px solid #1e1e1e',
+              color: 'var(--text-muted)',
+              padding: '0.45rem 1rem',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = '#00d2c4';
+              e.currentTarget.style.color = '#00d2c4';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = '#1e1e1e';
+              e.currentTarget.style.color = 'var(--text-muted)';
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back
+          </button>
+        </div>
+      )}
       <div className="profile-header">
         <div className="profile-header-info">
           <div className="profile-avatar-large">
