@@ -40,9 +40,11 @@ function Profile({ user, onBack }) {
         
         setProfileData(combinedData);
         setEditData({
+          name: combinedData.name || '',
           phone: combinedData.phone || '',
           gender: combinedData.gender || '',
           college_name: combinedData.college_name || '',
+          degree_stream: combinedData.degree_stream || '',
           year: combinedData.year || '',
           age: combinedData.age || '',
           dob: combinedData.dob ? new Date(combinedData.dob).toISOString().split('T')[0] : '',
@@ -68,6 +70,7 @@ function Profile({ user, onBack }) {
         phone: editData.phone,
         gender: editData.gender,
         college_name: editData.college_name,
+        degree_stream: editData.degree_stream,
         year: editData.year,
         age: editData.age ? parseInt(editData.age) : null,
         dob: editData.dob || null,
@@ -81,6 +84,15 @@ function Profile({ user, onBack }) {
         .upsert(payload, { onConflict: 'user_id' });
 
       if (error) throw error;
+      
+      // Update name in users table if changed
+      if (editData.name !== profileData.name) {
+        const { error: nameError } = await supabase
+          .from('users')
+          .update({ name: editData.name })
+          .eq('id', user.id);
+        if (nameError) throw nameError;
+      }
       
       // refresh data
       setProfileData({ ...profileData, ...payload });
@@ -175,16 +187,13 @@ function Profile({ user, onBack }) {
       </div>
       
       <div className="profile-details-list">
-        <div className="profile-detail-row">
-          <label>Email</label>
-          <p>{profileData?.email || 'N/A'}</p>
-        </div>
-
-        {/* Editable Fields */}
         {[
-          { key: 'phone', label: 'Phone', type: 'text' },
+          { key: 'name', label: 'Name', type: 'text' },
           { key: 'gender', label: 'Gender', type: 'text' },
+          { key: 'phone', label: 'Contact Number', type: 'text' },
+          { key: 'email', label: 'Email', type: 'text', readOnly: true },
           { key: 'college_name', label: 'College Name', type: 'text' },
+          { key: 'degree_stream', label: 'Degree & Stream', type: 'text' },
           { key: 'year', label: 'Year', type: 'text' },
           { key: 'age', label: 'Age', type: 'number' },
           { key: 'dob', label: 'DOB', type: 'date' },
@@ -194,7 +203,7 @@ function Profile({ user, onBack }) {
         ].map(field => (
           <div className="profile-detail-row" key={field.key}>
             <label>{field.label}</label>
-            {isEditing ? (
+            {isEditing && !field.readOnly ? (
               <input 
                 type={field.type} 
                 name={field.key} 
